@@ -24,7 +24,7 @@ namespace Abyss.Code.Screen
     {
 		public AbyssGame Game;
         private List<GameObject> GameObjects;
-        public World theWorld;
+        public World world;
         public FarseerCamera Camera;
         public PlayerCharacter PC;
 
@@ -36,10 +36,10 @@ namespace Abyss.Code.Screen
         public GameScreen(AbyssGame game)
         {
 			Game = game;
-            theWorld = new World(new Vector2(0, GRAVITY));
+            world = new World(new Vector2(0, GRAVITY));
             UnitConverter.SetDisplayUnitToSimUnitRatio(PIXELS_PER_METER);
 			Camera = new FarseerCamera(ref AbyssGame.spriteBatch, AbyssGame.Assests, Game.GraphicsDevice, 
-                Game.ScreenWidth, Game.ScreenHeight, ref theWorld, PIXELS_PER_METER);
+                Game.ScreenWidth, Game.ScreenHeight, ref world, PIXELS_PER_METER);
             Camera.viewMode = FarseerCamera.ViewMode.Scroll;
             
             GameObjects = new List<GameObject>(5); //probably a good starting number
@@ -52,13 +52,15 @@ namespace Abyss.Code.Screen
         public void loadLevel()
         {
 			Texture2D PlayerSprite = AbyssGame.Assests.Load<Texture2D>("lund_idle_down_scaled_2");
-            PC = new PlayerCharacter(this, new Vector2(15, 5), PlayerSprite, ref theWorld);
+            PC = new PlayerCharacter(this, new Vector2(15, 10), PlayerSprite, ref world);
             GameObjects.Add(PC);
-            GameObjects.Add(new RigidBlock(this, new Vector2(15, 12), null, ref theWorld,
-                50, 1));
+            GameObjects.Add(new RigidBlock(this, new Vector2(15, 12), null, ref world,
+				50, 1, 0.0f));
+			GameObjects.Add(new RigidBlock(this, new Vector2(20,8), null, ref world,
+				50, 1, 100.0f));
 
             Camera.Subject = PC;
-            Camera.subjetDistanceToScreenEdge = 500;
+            Camera.subjetDistanceToScreenEdge = 700;
 
             osd = new OSD();
             osd.LoadContent();
@@ -67,7 +69,7 @@ namespace Abyss.Code.Screen
         public void update(GameTime gameTime)
         {
             //no need to update GameObjects, they're GameComponents, and will get the update automatically.
-            theWorld.Step(gameTime.ElapsedGameTime.Milliseconds * .001f);
+            world.Step(gameTime.ElapsedGameTime.Milliseconds * .001f);
             Camera.update();
         }
 

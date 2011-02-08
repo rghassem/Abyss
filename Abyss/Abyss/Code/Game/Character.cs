@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
+using FarseerPhysics.Collision;
+using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Dynamics.Joints;
 using Abyss.Code.Screen;
 
@@ -20,60 +22,48 @@ namespace Abyss.Code.Game
     /// </summary>
     public class Character : PhysicsObject
     {
+		//Movement Variables
+		const float MAX_SPEED = 8;
+		const float MAX_AIR_SPEED = 12;
+		const float JUMP_HEIGHT = 30;
+		const float LONG_JUMP_BONUS = 15;
+		float movementAccel = 10;
+		float airAccel = 2;
+
+		protected bool moveLeft;
+		protected bool moveRight;
+		protected bool jump;
+		protected bool longJump;
+		bool jumping;
+
+		bool wallSlopeUnderLimit;
+
+		float timeSinceJump;
+		Vector2 groundVector;
+		Vector2 groundNormal = Vector2.UnitY;
+		float groundSlope;
+		float slopeLimit = 1f;
+		HashSet<Fixture> ground = new HashSet<Fixture>();
+		bool onGround
+		{
+			get
+			{
+				if (jumping)
+					return false;
+				return ground.Count > 0;		
+			}
+			set { } //can't be set, just is true if we currently have a ground.
+		}
+
         public Character(GameScreen screen, Vector2 pos, Texture2D sprt, ref World world)
 			: base(screen, pos, sprt, ref world)
         {
             // TODO: Construct any child components here
             PhysicsBody.Body.BodyType = BodyType.Dynamic;
+
+			PhysicsBody.OnCollision += onCollision;
+			PhysicsBody.OnSeparation += onSeperation;
         }
-
-    /*    protected override void createBody(ref World world)
-        {
-            float BodyHeight = (Sprite != null) ? UnitConverter.ToSimUnits(Sprite.Height) : 1;
-            float BodyWidth = (Sprite != null) ? UnitConverter.ToSimUnits(Sprite.Width) : 1;
-            PhysicsBody = FixtureFactory.CreateCircle(world, BodyHeight, 1);
-            PhysicsBody.Body.Position = position;
-
-            //The following code is adapted from: http://www.sgtconker.com/2010/09/article-xna-farseer-platform-physics-tutorial/
-
-            //Create a body that is almost the size of the entire object
-            //but with the bottom part cut off.
-            float upperBodyHeight = BodyHeight - (BodyWidth / 2);
-            //// body = BodyFactory.Instance.CreateRectangleBody(physics, BodyWidth, upperBodyHeight, mass / 2);
-            PhysicsBody = FixtureFactory.CreateRectangle(world, BodyWidth, upperBodyHeight, 1); //1 is density
-            //also shift it up a tiny bit to keep the new object's center correct
-            //// body.Position = position - Vector2.UnitY * (BodyWidth / 4);
-            PhysicsBody.Body.Position = position - Vector2.UnitY * (BodyWidth / 4);
-          ///  float centerOffset = position.Y - PhysicsBody.Body.Position.Y; //remember the offset from the center for drawing
-
-            //Now let's make sure our upperbody is always facing up.
-            //// fixedAngleJoint = JointFactory.Instance.CreateFixedAngleJoint(physics, body);
-           // FixedAngleJoint waistJoint = JointFactory.CreateFixedAngleJoint(world, PhysicsBody.Body);
-            //Create a wheel as wide as the whole object
-            Fixture wheelBody = FixtureFactory.CreateCircle(world, BodyWidth / 2, 1);
-
-           //And position its center at the bottom of the upper body
-            wheelBody.Body.Position = PhysicsBody.Body.Position + Vector2.UnitY * (upperBodyHeight / 2);
-
-            //These two bodies together are width wide and height high. So let's connect them together.
-            RevoluteJoint motor = JointFactory.CreateRevoluteJoint(world, PhysicsBody.Body, wheelBody.Body, wheelBody.Body.Position);
-            motor.MotorEnabled = true;
-            motor.MaxMotorTorque = 100f; //set this higher for some more juice
-            motor.MotorSpeed = 0;
-
-            //Create geomitries. Not using this.
-            wheelGeom = GeomFactory.Instance.CreateCircleGeom(physics, wheelBody, BodyWidth / 2, 16);
-            geom = GeomFactory.Instance.CreateRectangleGeom(physics, body, width, upperBodyHeight);
-            wheelGeom.IgnoreCollisionWith(geom);
-            geom.IgnoreCollisionWith(wheelGeom);
- 
-            //Set the friction of the wheelGeom to float.MaxValue for fast stopping/starting
-            //or set it higher to make the character slip.
-            wheelBody.Friction = float.MaxValue;
-
-            PhysicsBody.Body.BodyType = BodyType.Dynamic;
-            wheelBody.Body.BodyType = BodyType.Dynamic;
-        }*/
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting
@@ -93,8 +83,147 @@ namespace Abyss.Code.Game
         public override void Update(GameTime gameTime)
         {
             // TODO: Add your update code here
-
+			updateMovement(gameTime);
             base.Update(gameTime);
         }
+
+//Movement code:
+
+		public void updateMovement(GameTime gameTime)
+		{
+			//TODO: Convert normal vector into a rotatioin in degrees
+			Vector2 impulse = Vector2.Zero;
+			//groundSlope = 0;
+			if (onGround)
+			{
+				groundVector = getGroundVector();
+				groundSlope = groundVector.Y / groundVector.X;
+			}
+
+			wallSlopeUnderLimit = Math.Abs(groundSlope) < slopeLimit;
+
+			if (moveRight && wallSlopeUnderLimit)
+			{
+				if (onGround)
+					impulse += groundVector * movementAccel;
+				else
+					impulse += Vector2.UnitX * airAccel;
+			}
+
+			else if (moveLeft && wallSlopeUnderLimit)
+			{
+				if (onGround)
+					impulse += groundVector * -movementAccel;
+				else
+					impulse += Vector2.UnitX * -airAccel;
+			}
+
+			if (!moveLeft && !moveRight && onGround && wallSlopeUnderLimit)
+				PhysicsBody.Body.LinearVelocity = new Vector2(0, 0);
+			
+			if (jump && onGround)
+			{
+				jumping = true;
+				longJump = (moveLeft || moveRight) ? true : false;
+				timeSinceJump = 0.8f;
+			}
+
+			if (jumping)
+			{
+				float jumpHeight = JUMP_HEIGHT;
+				if (longJump)
+					jumpHeight += LONG_JUMP_BONUS;
+
+				if (timeSinceJump <= 0)
+					jumping = false;
+				else //jump
+				{
+					impulse -= Vector2.UnitY * (jumpHeight * (gameTime.ElapsedGameTime.Milliseconds * 0.01f));
+					timeSinceJump -= gameTime.ElapsedGameTime.Milliseconds * .01f;
+				}
+			}
+
+			PhysicsBody.Body.ApplyLinearImpulse(ref impulse);
+			Console.Out.WriteLine(onGround);
+
+			//limit speed
+			if (onGround)
+			{
+				if (Math.Abs(PhysicsBody.Body.LinearVelocity.Length()) > MAX_SPEED)
+				{
+					Vector2 adjustedVelocity = Vector2.Normalize(PhysicsBody.Body.LinearVelocity)
+						* MAX_SPEED;
+					PhysicsBody.Body.LinearVelocity = adjustedVelocity;
+				}
+			}
+			else //if in the air, apply the MAX_AIR_SPEED instead.
+			{
+				if (Math.Abs(PhysicsBody.Body.LinearVelocity.Length()) > MAX_AIR_SPEED)
+				{
+					Vector2 adjustedVelocity = Vector2.Normalize(PhysicsBody.Body.LinearVelocity)
+						* MAX_AIR_SPEED;
+					PhysicsBody.Body.LinearVelocity = adjustedVelocity;
+				}
+			}
+
+			//stop any rotation
+			PhysicsBody.Body.AngularVelocity = 0;
+
+			//reset the controller booleans
+			moveLeft = false;
+			moveRight = false;
+			jump = false;
+
+		}
+
+		private Vector2 getGroundVector()
+		{
+			return new Vector2(-groundNormal.Y, groundNormal.X);
+		}
+
+		private bool isGround(WorldManifold manifold)
+		{
+			if (manifold.Normal.Y > 0.5)
+				return false;
+			return manifold.Points[0].Y < (PhysicsBody.Body.Position.Y + PhysicsBody.Shape.Radius) ||
+					manifold.Points[1].Y < (PhysicsBody.Body.Position.Y + PhysicsBody.Shape.Radius);
+		}
+
+		private bool onCollision(Fixture f1, Fixture f2, Contact contact)
+		{
+			Fixture obstacle = (f1  == PhysicsBody) ? f2 : f1;
+
+			//if beneath the feet, treat it as ground
+			WorldManifold manifold;
+			contact.GetWorldManifold(out manifold);
+			if (contact.IsTouching())
+			{
+				if (isGround(manifold))
+				{
+					ground.Add(obstacle);
+					groundNormal = manifold.Normal;
+					groundVector = getGroundVector();
+					groundSlope = groundVector.Y / groundVector.X;
+					Console.Out.WriteLine("OnCollision called");
+				}
+			}
+			return true;
+		}
+
+
+		private void onSeperation(Fixture f1, Fixture f2)
+		{
+			Fixture obstacle = (f1 == PhysicsBody) ? f2 : f1;
+
+			ground.Remove(obstacle);
+			Console.Out.WriteLine("OnSeperation called");
+		}
+
+		private void updateRotation()
+		{
+			double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitY, groundNormal));
+			Rotation = ((float)angleOfRotation);
+		}
+		
     }
 }

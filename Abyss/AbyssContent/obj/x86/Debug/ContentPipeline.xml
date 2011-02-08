@@ -7,7 +7,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\background.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\background.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -16,7 +16,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bEast.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bEast.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -25,7 +25,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bNorth.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bNorth.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -34,7 +34,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bSouth.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bSouth.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -43,7 +43,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bWest.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\bWest.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -52,7 +52,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cNE.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cNE.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -61,7 +61,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cNW.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cNW.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -70,7 +70,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cSE.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cSE.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -79,7 +79,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cSW.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Box1\cSW.xnb</Output>
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
@@ -88,17 +88,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lud_desaturated_sprite.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lud_desaturated_sprite.xnb</Output>
       <Time>2010-12-23T17:10:40.7086851-08:00</Time>
-    </Item>
-    <Item>
-      <Source>Fonts\Default.spritefont</Source>
-      <Name>Fonts\Default</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Fonts\Default.xnb</Output>
-      <Time>2010-11-10T17:08:31.2924983-08:00</Time>
     </Item>
     <Item>
       <Source>lund_idle.png</Source>
@@ -106,7 +97,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle.xnb</Output>
       <Time>2010-12-27T23:21:26.1120168-08:00</Time>
     </Item>
     <Item>
@@ -115,7 +106,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle_down_scaled.xnb</Output>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle_down_scaled.xnb</Output>
       <Time>2010-12-28T02:46:11.679711-08:00</Time>
     </Item>
     <Item>
@@ -124,8 +115,17 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle_down_scaled_2.xnb</Output>
-      <Time>2010-12-28T02:47:01.891583-08:00</Time>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle_down_scaled_2.xnb</Output>
+      <Time>2011-02-08T14:11:17.5263032-08:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\Default.spritefont</Source>
+      <Name>Fonts\Default</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Fonts\Default.xnb</Output>
+      <Time>2010-11-10T17:08:31.2924983-08:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -133,10 +133,10 @@
       <TargetProfile>HiDef</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Reza\Desktop\Abyss\Abyss\AbyssContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Reza\Desktop\Abyss\Abyss\AbyssContent\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Reza\Desktop\Abyss\Abyss\Abyss\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\AbyssContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\AbyssContent\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>

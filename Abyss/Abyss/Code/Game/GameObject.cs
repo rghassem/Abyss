@@ -21,6 +21,7 @@ namespace Abyss.Code.Game
     {
 		protected GameScreen environment;
         protected Vector2 position;
+		public float Rotation;
         public virtual Vector2 Position 
         {
             get
@@ -41,6 +42,7 @@ namespace Abyss.Code.Game
             Position = pos;
             if(sprt != null)
                 Sprite = sprt;
+			Rotation = 0;
 			environment.Game.addComponent(this);
             // TODO: Construct any child components here
         }

@@ -20,11 +20,12 @@ namespace Abyss.Code.Game
     /// </summary>
     public class RigidBlock : PhysicsObject
     {
-        public RigidBlock(GameScreen screen, Vector2 pos, Texture2D sprt, ref World world, float width, float height)
+        public RigidBlock(GameScreen screen, Vector2 pos, Texture2D sprt, ref World world, float width, float height, float rotation = 1)
             : base(screen, pos, sprt, ref world)
         {
             world.RemoveBody(PhysicsBody.Body);
             PhysicsBody = FixtureFactory.CreateRectangle(world, width, height, 1);
+			PhysicsBody.Body.Rotation = rotation;
             PhysicsBody.Body.Position = pos;
             // TODO: Construct any child components here
         }

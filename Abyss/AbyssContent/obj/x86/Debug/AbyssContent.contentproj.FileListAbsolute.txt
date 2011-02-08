@@ -1,2 +1,3 @@
 C:\Users\Shawn Merrill\Documents\Visual Studio 2010\Projects\Abyss\Abyss\AbyssContent\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Users\Reza\Desktop\Abyss\Abyss\AbyssContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\AbyssContent\obj\x86\Debug\ResolveAssemblyReference.cache

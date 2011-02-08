@@ -158,16 +158,12 @@ namespace Abyss.Code.Game
         
         public void draw()
         {
-
-
-                //maybe try passing in the debug view.
                 
             float aspect = (float)Screen.Width / Screen.Height;
             Matrix scale = Matrix.CreateScale(pixelsPerMeter);
             Matrix PhysicsView = scale * View *
                 Matrix.CreateTranslation(-Screen.Width * .5f, -Screen.Height * .5f, 0f);
             
-
             spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, View);
                 while(DrawQueue.Count > 0)
                 {

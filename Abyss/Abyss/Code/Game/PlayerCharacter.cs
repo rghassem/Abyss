@@ -57,35 +57,15 @@ namespace Abyss.Code.Game
         /// </summary>
         private void handlePlayerInput()
         {
-            Vector2 impulse = Vector2.Zero;
-
             if (Input.isRightHeld())
-                impulse.X += movementAccel;
+                moveRight = true;
 
-			else if (Input.isLeftHeld())
-                impulse.X -= movementAccel;
-            else if (!Input.isLeftHeld() && !Input.isRightHeld())
-                PhysicsBody.Body.LinearVelocity = new Vector2(0, PhysicsBody.Body.LinearVelocity.Y);
-
+			if (Input.isLeftHeld())
+                moveLeft = true;
+     
             if (Input.jumpPressed())
             {
-                if (PhysicsBody.Body.LinearVelocity.Y <= 0.01 && PhysicsBody.Body.LinearVelocity.Y >= -0.01)
-                {
-                    impulse.Y -= 30;
-                }
-            }
-
-            PhysicsBody.Body.ApplyLinearImpulse(ref impulse);
-
-            //limit horizontal speed
-            if (Math.Abs(PhysicsBody.Body.LinearVelocity.X) > MAX_HORIZONTAL_SPEED)
-            {
-                Vector2 lv = PhysicsBody.Body.LinearVelocity;
-                float lvx = Math.Abs(lv.X);
-                float diff = (lvx - MAX_HORIZONTAL_SPEED) * (lv.X / lvx);
-                Vector2 newVelocity = new Vector2(lv.X - diff, lv.Y);
-
-                PhysicsBody.Body.LinearVelocity = newVelocity;
+				jump = true;
             }
         }
 
