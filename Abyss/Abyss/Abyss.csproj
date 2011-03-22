@@ -99,6 +99,7 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
       <Private>False</Private>
     </Reference>
@@ -127,6 +128,7 @@
     <Compile Include="Code\UserInterface\InterfaceComponent.cs" />
     <Compile Include="Code\UserInterface\OSD\Box.cs" />
     <Compile Include="Code\UserInterface\OSD\OSD.cs" />
+    <Compile Include="MessageHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AbyssGame.cs" />

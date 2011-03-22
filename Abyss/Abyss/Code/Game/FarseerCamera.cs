@@ -142,15 +142,23 @@ namespace Abyss.Code.Game
         /// <param name="texture">The Sprite to draw</param>
         /// <param name="position">Where to draw to the top left corner of the object, in screen coords</param>
         /// <param name="color">The color parameter to pass to spriteBatch.draw()</param>
-        public void record(Texture2D texture, Vector2 position, Color color)
+        public void record(Texture2D texture, Vector2 position, Color color, Nullable<Rectangle> sourceRectangle,
+			float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
-            DrawQueue.Enqueue(new drawObjectData(texture, position, color));
+			DrawQueue.Enqueue(new drawObjectData(texture, position, color, sourceRectangle, rotation, origin,
+				scale, effects, layerDepth));
         }
+		public void record(Texture2D texture, Vector2 position, Color color)
+		{
+			DrawQueue.Enqueue(new drawObjectData(texture, position, color, null, 0, new Vector2(0,0),
+				new Vector2(1,1), SpriteEffects.None, 1));
+		}
         public void record(Texture2D texture, Vector2 position)
         {
-            record(texture, position, Color.White);
+            record(texture, position, Color.White, null, 0, new Vector2(0,0), new Vector2 (1,1),
+				SpriteEffects.None, 0);
         }
-        public void capture(GameObject gameObject)
+        public void record(GameObject gameObject)
         {
             record(gameObject.Sprite, gameObject.Position, Color.White);
         }
@@ -176,7 +184,9 @@ namespace Abyss.Code.Game
                         screenPos.X -= (currentObject.texture.Width / 2);
                         screenPos.Y -= (currentObject.texture.Height / 2);
 
-                        spriteBatch.Draw(currentObject.texture, screenPos, currentObject.color);
+                        spriteBatch.Draw(currentObject.texture, screenPos, currentObject.sourceRectangle,
+							currentObject.color, currentObject.rotation, currentObject.origin, currentObject.scale,
+							currentObject.effects,currentObject.layerDepth);
                     }
                 }
             spriteBatch.End();
@@ -246,11 +256,25 @@ namespace Abyss.Code.Game
             public Vector2 position;
             public Color color;
 
-            public drawObjectData(Texture2D t, Vector2 p, Color c)
+			public Nullable<Rectangle> sourceRectangle;
+			public float rotation;
+			public Vector2 origin;
+			public Vector2 scale;
+			public SpriteEffects effects;
+			public float layerDepth;
+
+            public drawObjectData(Texture2D t, Vector2 p, Color c, Nullable<Rectangle> rec, float rot,
+				Vector2 orig, Vector2 s, SpriteEffects fx, float ld)
             {
                 texture = t;
                 position = p;
                 color = c;
+				sourceRectangle = rec;
+				rotation = rot;
+				origin = orig;
+				scale = s;
+				effects = fx;
+				layerDepth = ld;
             }
         }
 

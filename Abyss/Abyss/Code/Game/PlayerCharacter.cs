@@ -20,7 +20,6 @@ namespace Abyss.Code.Game
     public class PlayerCharacter : Character
     {
         const float MAX_HORIZONTAL_SPEED = 10;
-		float movementAccel = 10;
 
         public PlayerCharacter(GameScreen screen , Vector2 pos, Texture2D sprt, ref World world)
 			: base(screen, pos, sprt, ref world)
@@ -50,18 +49,21 @@ namespace Abyss.Code.Game
         }
 
         /// <summary>
-        /// Where input from the player is handled. Lots to do here, needs to only work if 
-		/// GameScreen is active, needs to determine when we are
-        /// standing on something in a less hacky manner. Numbers need to be fine tuned, and
-        /// I think there is a bug in the movement code.
+        /// Where input from the player is handled.
         /// </summary>
         private void handlePlayerInput()
         {
-            if (Input.isRightHeld())
-                moveRight = true;
+			if (Input.isRightHeld())
+			{
+				moveRight = true;
+				FacingLeft = false;
+			}
 
 			if (Input.isLeftHeld())
-                moveLeft = true;
+			{
+				moveLeft = true;
+				FacingLeft = true;
+			}
      
             if (Input.jumpPressed())
             {

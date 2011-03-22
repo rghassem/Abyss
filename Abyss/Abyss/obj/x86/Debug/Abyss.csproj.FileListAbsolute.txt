@@ -58,3 +58,4 @@ C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\obj\x86\Debug\ResolveAssemblyR
 C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\obj\x86\Debug\Abyss.exe
 C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\obj\x86\Debug\Abyss.pdb
+C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\TroymiumNET(4.0).dll

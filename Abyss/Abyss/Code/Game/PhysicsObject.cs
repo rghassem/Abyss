@@ -76,7 +76,7 @@ namespace Abyss.Code.Game
 
         public override void draw(GameTime gameTime)
         {
-            environment.Camera.capture(this);
+            environment.Camera.record(this);
         }
     }
 }

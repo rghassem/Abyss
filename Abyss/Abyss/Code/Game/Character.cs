@@ -30,6 +30,8 @@ namespace Abyss.Code.Game
 		float movementAccel = 10;
 		float airAccel = 2;
 
+		protected bool FacingLeft { get; set; }
+
 		protected bool moveLeft;
 		protected bool moveRight;
 		protected bool jump;
@@ -88,6 +90,14 @@ namespace Abyss.Code.Game
         }
 
 //Movement code:
+		protected void faceLeft()
+		{
+			FacingLeft = true;
+		}
+		protected void faceRight()
+		{
+			FacingLeft = false;
+		}
 
 		public void updateMovement(GameTime gameTime)
 		{
@@ -223,6 +233,16 @@ namespace Abyss.Code.Game
 		{
 			double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitY, groundNormal));
 			Rotation = ((float)angleOfRotation);
+		}
+
+		public override void draw(GameTime gameTime)
+		{
+			//this just means mirror the sprite if we're not FacingLeft.
+			if (FacingLeft)
+				environment.Camera.record(Sprite, Position, Color.White, null, 0, new Vector2(0, 0), new Vector2(1, 1),
+				SpriteEffects.FlipHorizontally, 0);
+			else
+				environment.Camera.record(this);
 		}
 		
     }
