@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+<Asset Type="System.Collections.Generic.Dictionary[System.String, Microsoft.Xna.Framework.Rectangle]">
+<Item><Key>jog01</Key><Value>0 0 120 120</Value></Item>
+<Item><Key>jog02</Key><Value>121 0 120 120</Value></Item>
+<Item><Key>jog03</Key><Value>0 121 120 120</Value></Item>
+<Item><Key>jog04</Key><Value>121 121 120 120</Value></Item>
+<Item><Key>jog05</Key><Value>242 0 120 120</Value></Item>
+<Item><Key>jog06</Key><Value>242 121 120 120</Value></Item>
+<Item><Key>jog07</Key><Value>363 0 120 120</Value></Item>
+<Item><Key>jog08</Key><Value>363 121 120 120</Value></Item>
+<Item><Key>jog09</Key><Value>484 0 120 120</Value></Item>
+<Item><Key>jog10</Key><Value>484 121 120 120</Value></Item>
+<Item><Key>jog11</Key><Value>605 0 120 120</Value></Item>
+<Item><Key>jog12</Key><Value>605 121 120 120</Value></Item>
+<Item><Key>jog13</Key><Value>726 0 120 120</Value></Item>
+<Item><Key>idle</Key><Value>847 0 120 120</Value></Item>
+</Asset>
+</XnaContent>

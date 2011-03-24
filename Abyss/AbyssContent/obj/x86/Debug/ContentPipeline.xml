@@ -83,42 +83,6 @@
       <Time>2010-11-10T16:55:31.1270564-08:00</Time>
     </Item>
     <Item>
-      <Source>lud_desaturated_sprite.png</Source>
-      <Name>lud_desaturated_sprite</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lud_desaturated_sprite.xnb</Output>
-      <Time>2010-12-23T17:10:40.7086851-08:00</Time>
-    </Item>
-    <Item>
-      <Source>lund_idle.png</Source>
-      <Name>lund_idle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle.xnb</Output>
-      <Time>2010-12-27T23:21:26.1120168-08:00</Time>
-    </Item>
-    <Item>
-      <Source>lund_idle_down_scaled.png</Source>
-      <Name>lund_idle_down_scaled</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle_down_scaled.xnb</Output>
-      <Time>2010-12-28T02:46:11.679711-08:00</Time>
-    </Item>
-    <Item>
-      <Source>lund_idle_down_scaled_2.png</Source>
-      <Name>lund_idle_down_scaled_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\lund_idle_down_scaled_2.xnb</Output>
-      <Time>2011-02-08T14:11:17.5263032-08:00</Time>
-    </Item>
-    <Item>
       <Source>Fonts\Default.spritefont</Source>
       <Name>Fonts\Default</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -126,6 +90,24 @@
       <Options>None</Options>
       <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Fonts\Default.xnb</Output>
       <Time>2010-11-10T17:08:31.2924983-08:00</Time>
+    </Item>
+    <Item>
+      <Source>Animations\lundSprite.png</Source>
+      <Name>Animations\lundSprite</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Animations\lundSprite.xnb</Output>
+      <Time>2011-03-23T19:37:58.7415317-07:00</Time>
+    </Item>
+    <Item>
+      <Source>Animations\lundSpriteRef.xml</Source>
+      <Name>Animations\lundSpriteRef</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Reza\Desktop\Abyss Dev\Abyss\Abyss\Abyss\bin\x86\Debug\Content\Animations\lundSpriteRef.xnb</Output>
+      <Time>2011-03-23T19:40:20.7786557-07:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

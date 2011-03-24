@@ -19,9 +19,9 @@ namespace Abyss.Code.Game
     /// </summary>
     public abstract class GameObject : GameComponent
     {
-		protected GameScreen environment;
-        protected Vector2 position;
 		public float Rotation;
+		public float Scale;
+		public Texture2D Sprite { get; private set; }
         public virtual Vector2 Position 
         {
             get
@@ -33,19 +33,37 @@ namespace Abyss.Code.Game
                 position = value;
             }
         }
-        public Texture2D Sprite { get; private set; }
+		protected Vector2 position;
 
-        public GameObject(GameScreen screen, Vector2 pos, Texture2D sprt)
+		protected GameScreen environment;
+		protected AnimationManager animationManager;
+		protected string spriteName;
+
+        public GameObject(GameScreen screen, Vector2 pos, string spriteAssetName)
 			: base(screen.Game)
-        { 
+        {
+			spriteName = spriteAssetName;
 			environment = screen;
             Position = pos;
-            if(sprt != null)
-                Sprite = sprt;
+			if (spriteAssetName != null)
+			{
+				string dummy = AbyssGame.Assests.RootDirectory;
+				Sprite = AbyssGame.Assests.Load<Texture2D>(spriteAssetName);
+				//make dummy animation manager assuming no animations, for now.
+				animationManager = new AnimationManager(Sprite.Width, Sprite.Height);
+			}
 			Rotation = 0;
+			Scale = 1;
 			environment.Game.addComponent(this);
-            // TODO: Construct any child components here
         }
+
+		/// <summary>
+		/// Called as the last step after all other initialization.
+		/// Physics objects contruct their Physics Bodies here.
+		/// </summary>
+		public virtual void postLoadLevel()
+		{ 
+		}
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting

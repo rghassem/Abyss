@@ -19,12 +19,27 @@ namespace Abyss.Code.Game
     /// </summary>
     public class PlayerCharacter : Character
     {
-        const float MAX_HORIZONTAL_SPEED = 10;
+		//Animation Constants
+		float WALK_CYCLE_LENGTH = 0.5f;
 
-        public PlayerCharacter(GameScreen screen , Vector2 pos, Texture2D sprt, ref World world)
-			: base(screen, pos, sprt, ref world)
+		public PlayerCharacter(GameScreen screen, Vector2 pos, string sprt, ref World world, float width, float height)
+			: base(screen, pos, sprt, ref world, width, height)
         {
-            // TODO: Construct any child components here
+			MaxSpeed = 5;
+			MaxAirSpeed = 9;
+			JumpHeight = 30;
+			LongJumpBonus = 15;
+			MovementAccel = 10;
+			AirAccel = 2;
+
+			//set scale
+			Scale = 0.8f;
+
+			//add animations
+			animationManager.addAnimation("Run", WALK_CYCLE_LENGTH,
+				"jog01", "jog02", "jog03", "jog04", "jog05", "jog06", "jog07", "jog08", "jog09", "jog10", "jog11", "jog12", "jog13");
+			animationManager.addAnimation("Idle", 0.5f,
+				"idle");
         }
 
         /// <summary>
@@ -33,7 +48,6 @@ namespace Abyss.Code.Game
         /// </summary>
         public override void Initialize()
         {
-            // TODO: Add your initialization code here
             base.Initialize();
         }
 
@@ -55,20 +69,26 @@ namespace Abyss.Code.Game
         {
 			if (Input.isRightHeld())
 			{
-				moveRight = true;
-				FacingLeft = false;
+				stepRight();
+				if(onGround)
+					animationManager.playAnim("Run");
 			}
 
 			if (Input.isLeftHeld())
 			{
-				moveLeft = true;
-				FacingLeft = true;
+				stepLeft();
+				if(onGround)
+					animationManager.playAnim("Run");
 			}
      
             if (Input.jumpPressed())
             {
 				jump = true;
+				animationManager.playAnim("Idle");
             }
+
+			if (!inStep)
+				animationManager.loopAnim("Idle");
         }
 
     }

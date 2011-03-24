@@ -181,8 +181,9 @@ namespace Abyss.Code.Game
                         //Tranform the sprite's position to line up with its physics body
                         Vector2 screenPos = Vector2.Transform(currentObject.position, scale);
 
-                        screenPos.X -= (currentObject.texture.Width / 2);
-                        screenPos.Y -= (currentObject.texture.Height / 2);
+						//not needed so long as sprite's origin is at its center.
+                        //screenPos.X -= (currentObject.texture.Width / 2);
+                        //screenPos.Y -= (currentObject.texture.Height / 2);
 
                         spriteBatch.Draw(currentObject.texture, screenPos, currentObject.sourceRectangle,
 							currentObject.color, currentObject.rotation, currentObject.origin, currentObject.scale,

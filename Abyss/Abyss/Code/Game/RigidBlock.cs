@@ -20,15 +20,17 @@ namespace Abyss.Code.Game
     /// </summary>
     public class RigidBlock : PhysicsObject
     {
-        public RigidBlock(GameScreen screen, Vector2 pos, Texture2D sprt, ref World world, float width, float height, float rotation = 1)
-            : base(screen, pos, sprt, ref world)
+        public RigidBlock(GameScreen screen, Vector2 pos, string sprt, ref World world, float width, float height, float rotation = 1)
+            : base(screen, pos, sprt, ref world, width, height)
         {
-            world.RemoveBody(PhysicsBody.Body);
-            PhysicsBody = FixtureFactory.CreateRectangle(world, width, height, 1);
 			PhysicsBody.Body.Rotation = rotation;
-            PhysicsBody.Body.Position = pos;
-            // TODO: Construct any child components here
+			PhysicsBody.Body.Position = pos;
         }
+
+		protected override void createBody(ref World world)
+		{
+			PhysicsBody = FixtureFactory.CreateRectangle(world, width, height, 1);
+		}
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting

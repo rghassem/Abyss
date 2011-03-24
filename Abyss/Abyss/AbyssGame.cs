@@ -33,6 +33,7 @@ namespace Abyss
         public int ScreenHeight = 720;
 
 		#region TroymiumInit
+		
 		[DllImport("user32.dll")]
 		static extern int ToUnicode(
 			uint wVirtKey, uint wScanCode, byte[] lpKeyState,
@@ -119,7 +120,10 @@ namespace Abyss
             Window.Title = "Abyss v0.2";
 
 			IsMouseVisible = true; // Added for Troymium
-            
+
+			// Create a new SpriteBatch, which can be used to draw textures.
+			spriteBatch = new SpriteBatch(GraphicsDevice);
+			screenManager = new ScreenManager(this);
 			base.Initialize();
         }
 
@@ -129,10 +133,7 @@ namespace Abyss
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            screenManager = new ScreenManager(this);
-            screenManager.loadGameLevel();
+			screenManager.loadGameLevel();
 
 			// ADDED FOR TROYMIUM
 
@@ -157,12 +158,13 @@ namespace Abyss
 			webKit.Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 			webKit.Transparent = true;
 			string dir = System.IO.Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
-			webKit.NavigateTo("file:///C:/Users/Reza/Desktop/Abyss Dev/Abyss/Abyss/AbyssContent/AbyssUI.html");
-			//webKit.LoadHTML("C:/Users/Jesus/Desktop/Abyss/Abyss/AbyssContent/AbyssUI.html");
+			dir = dir.Replace("\\", "/");
+			webKit.NavigateTo("file:///" + dir + "/AbyssContent/AbyssUI.html");
 			Console.WriteLine("CURRENT DIRECTORY " + System.IO.Directory.GetCurrentDirectory());
 			// END OF TROYMIUM SUPPORT
 
             // TODO: use this.Content to load your game content here
+ 
         }
 
         /// <summary>
@@ -290,7 +292,7 @@ namespace Abyss
 			spriteBatch.Draw(backingStore, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), new Color(255, 255, 255, a));
 			spriteBatch.End();
 			// END OF TROYMIUM SUPPORT
-
+			
 
             base.Draw(gameTime);
         }
@@ -395,5 +397,6 @@ namespace Abyss
 			TroymiumNET.Destroy();
 		}
 		// END OF TROYMIUM METHODS
+		  
 	}
 }

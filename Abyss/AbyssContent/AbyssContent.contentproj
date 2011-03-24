@@ -96,31 +96,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="lud_desaturated_sprite.png">
-      <Name>lud_desaturated_sprite</Name>
+    <Compile Include="Animations\lundSprite.png">
+      <Name>lundSprite</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="lund_idle.png">
-      <Name>lund_idle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="lund_idle_down_scaled.png">
-      <Name>lund_idle_down_scaled</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="lund_idle_down_scaled_2.png">
-      <Name>lund_idle_down_scaled_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
+    <Compile Include="Animations\lundSpriteRef.xml">
+      <Name>lundSpriteRef</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

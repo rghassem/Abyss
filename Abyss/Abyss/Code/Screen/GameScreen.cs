@@ -51,8 +51,7 @@ namespace Abyss.Code.Screen
         /// </summary>
         public void loadLevel()
         {
-			Texture2D PlayerSprite = AbyssGame.Assests.Load<Texture2D>("lund_idle_down_scaled_2");
-            PC = new PlayerCharacter(this, new Vector2(15, 10), PlayerSprite, ref world);
+			PC = new PlayerCharacter(this, new Vector2(15, 10), "Animations/lundSprite", ref world, 120, 120);
             GameObjects.Add(PC);
             GameObjects.Add(new RigidBlock(this, new Vector2(15, 12), null, ref world,
 				50, 1, 0.0f));
@@ -64,6 +63,9 @@ namespace Abyss.Code.Screen
 
             osd = new OSD();
             osd.LoadContent();
+
+			foreach (GameObject go in GameObjects)
+				go.postLoadLevel();
         }
 
         public void update(GameTime gameTime)

@@ -23,14 +23,18 @@ namespace Abyss.Code.Game
     public class Character : PhysicsObject
     {
 		//Movement Variables
-		const float MAX_SPEED = 8;
-		const float MAX_AIR_SPEED = 12;
-		const float JUMP_HEIGHT = 30;
-		const float LONG_JUMP_BONUS = 15;
-		float movementAccel = 10;
-		float airAccel = 2;
+		protected float MaxSpeed = 8;
+		protected float MaxAirSpeed = 12;
+		protected float JumpHeight = 30;
+		protected float LongJumpBonus = 15;
+		protected float MovementAccel = 10;
+		protected float AirAccel = 2;
+		protected float stepTime = 0.1f;
 
 		protected bool FacingLeft { get; set; }
+
+		protected bool inStep;
+		private float timeSinceStep;
 
 		protected bool moveLeft;
 		protected bool moveRight;
@@ -46,7 +50,7 @@ namespace Abyss.Code.Game
 		float groundSlope;
 		float slopeLimit = 1f;
 		HashSet<Fixture> ground = new HashSet<Fixture>();
-		bool onGround
+		protected bool onGround
 		{
 			get
 			{
@@ -57,15 +61,22 @@ namespace Abyss.Code.Game
 			set { } //can't be set, just is true if we currently have a ground.
 		}
 
-        public Character(GameScreen screen, Vector2 pos, Texture2D sprt, ref World world)
-			: base(screen, pos, sprt, ref world)
+		public Character(GameScreen screen, Vector2 pos, string sprt, ref World world, float width, float height)
+			: base(screen, pos, sprt, ref world, width, height)
         {
             // TODO: Construct any child components here
-            PhysicsBody.Body.BodyType = BodyType.Dynamic;
+            
+			animationManager = new AnimationManager(spriteName);
+        }
+
+		public override void postLoadLevel()
+		{
+			base.postLoadLevel();
+			PhysicsBody.Body.BodyType = BodyType.Dynamic;
 
 			PhysicsBody.OnCollision += onCollision;
 			PhysicsBody.OnSeparation += onSeperation;
-        }
+		}
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting
@@ -78,6 +89,13 @@ namespace Abyss.Code.Game
             base.Initialize();
         }
 
+		protected override void createBody(ref World world)
+		{
+			float BodyHeight = (Sprite != null) ? UnitConverter.ToSimUnits(height / 2) : 1;
+			PhysicsBody = FixtureFactory.CreateCircle(world, BodyHeight, 1);
+			PhysicsBody.Body.Position = position;
+		}
+
         /// <summary>
         /// Allows the game component to update itself.
         /// </summary>
@@ -86,24 +104,52 @@ namespace Abyss.Code.Game
         {
             // TODO: Add your update code here
 			updateMovement(gameTime);
+			animationManager.animate(gameTime);
             base.Update(gameTime);
         }
 
 //Movement code:
-		protected void faceLeft()
+		protected virtual void stepRight()
 		{
-			FacingLeft = true;
-		}
-		protected void faceRight()
-		{
-			FacingLeft = false;
+			moveRight = true;
+			moveLeft = false;
+			if (onGround)
+				FacingLeft = false;
+			inStep = true;
+			timeSinceStep = 0;
 		}
 
-		public void updateMovement(GameTime gameTime)
+		protected virtual void stepLeft()
 		{
+			moveLeft = true;
+			moveRight = false;
+			if (onGround)
+				FacingLeft = true;
+			inStep = true;
+			timeSinceStep = 0;
+		}
+
+		private void updateStep(GameTime gameTime)
+		{
+			timeSinceStep += gameTime.ElapsedGameTime.Milliseconds*0.001f;
+			if (timeSinceStep >= stepTime)
+			{
+				moveLeft = false;
+				moveRight = false;
+				inStep = false;
+			}
+		}
+
+		private void updateMovement(GameTime gameTime)
+		{
+			updateRotation();
+
+			if (inStep)
+				updateStep(gameTime);
+
 			//TODO: Convert normal vector into a rotatioin in degrees
 			Vector2 impulse = Vector2.Zero;
-			//groundSlope = 0;
+			
 			if (onGround)
 			{
 				groundVector = getGroundVector();
@@ -115,34 +161,40 @@ namespace Abyss.Code.Game
 			if (moveRight && wallSlopeUnderLimit)
 			{
 				if (onGround)
-					impulse += groundVector * movementAccel;
+				{
+					impulse += groundVector * MovementAccel;
+				}
 				else
-					impulse += Vector2.UnitX * airAccel;
+					impulse += Vector2.UnitX * AirAccel;
 			}
 
 			else if (moveLeft && wallSlopeUnderLimit)
 			{
 				if (onGround)
-					impulse += groundVector * -movementAccel;
+				{
+					impulse += groundVector * -MovementAccel;
+				}
 				else
-					impulse += Vector2.UnitX * -airAccel;
+					impulse += Vector2.UnitX * -AirAccel;
 			}
 
 			if (!moveLeft && !moveRight && onGround && wallSlopeUnderLimit)
+			{
 				PhysicsBody.Body.LinearVelocity = new Vector2(0, 0);
+			}
 			
-			if (jump && onGround)
+			if (jump && onGround) 
 			{
 				jumping = true;
 				longJump = (moveLeft || moveRight) ? true : false;
-				timeSinceJump = 0.8f;
+				timeSinceJump = 0.8f; //time to apply upward impulse
 			}
 
 			if (jumping)
 			{
-				float jumpHeight = JUMP_HEIGHT;
+				float jumpHeight = JumpHeight;
 				if (longJump)
-					jumpHeight += LONG_JUMP_BONUS;
+					jumpHeight += LongJumpBonus;
 
 				if (timeSinceJump <= 0)
 					jumping = false;
@@ -159,19 +211,19 @@ namespace Abyss.Code.Game
 			//limit speed
 			if (onGround)
 			{
-				if (Math.Abs(PhysicsBody.Body.LinearVelocity.Length()) > MAX_SPEED)
+				if (Math.Abs(PhysicsBody.Body.LinearVelocity.Length()) > MaxSpeed)
 				{
 					Vector2 adjustedVelocity = Vector2.Normalize(PhysicsBody.Body.LinearVelocity)
-						* MAX_SPEED;
+						* MaxSpeed;
 					PhysicsBody.Body.LinearVelocity = adjustedVelocity;
 				}
 			}
 			else //if in the air, apply the MAX_AIR_SPEED instead.
 			{
-				if (Math.Abs(PhysicsBody.Body.LinearVelocity.Length()) > MAX_AIR_SPEED)
+				if (Math.Abs(PhysicsBody.Body.LinearVelocity.Length()) > MaxAirSpeed)
 				{
 					Vector2 adjustedVelocity = Vector2.Normalize(PhysicsBody.Body.LinearVelocity)
-						* MAX_AIR_SPEED;
+						* MaxAirSpeed;
 					PhysicsBody.Body.LinearVelocity = adjustedVelocity;
 				}
 			}
@@ -179,9 +231,7 @@ namespace Abyss.Code.Game
 			//stop any rotation
 			PhysicsBody.Body.AngularVelocity = 0;
 
-			//reset the controller booleans
-			moveLeft = false;
-			moveRight = false;
+			//reset the controller jump boolean
 			jump = false;
 
 		}
@@ -231,18 +281,21 @@ namespace Abyss.Code.Game
 
 		private void updateRotation()
 		{
-			double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitY, groundNormal));
-			Rotation = ((float)angleOfRotation);
+			if (onGround)
+			{
+				double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitY, groundNormal)) - Math.PI;
+				Rotation = ((float)angleOfRotation);
+			}
+			else Rotation = 0;
 		}
 
 		public override void draw(GameTime gameTime)
 		{
+			Vector2 origin = new Vector2(animationManager.CurrentFrame.Width / 2, animationManager.CurrentFrame.Height / 2);
 			//this just means mirror the sprite if we're not FacingLeft.
-			if (FacingLeft)
-				environment.Camera.record(Sprite, Position, Color.White, null, 0, new Vector2(0, 0), new Vector2(1, 1),
-				SpriteEffects.FlipHorizontally, 0);
-			else
-				environment.Camera.record(this);
+			SpriteEffects direction = (FacingLeft) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+			environment.Camera.record(Sprite, Position, Color.White, animationManager.CurrentFrame, Rotation, origin, new Vector2(Scale, Scale),
+				direction, 0);
 		}
 		
     }

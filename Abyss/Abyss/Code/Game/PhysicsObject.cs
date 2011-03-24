@@ -23,6 +23,9 @@ namespace Abyss.Code.Game
 
         protected Fixture PhysicsBody;
 
+		protected float height;
+		protected float width;
+
         public override Vector2 Position 
         {
             get 
@@ -39,19 +42,25 @@ namespace Abyss.Code.Game
             }
         }
 
-        public PhysicsObject(GameScreen screen, Vector2 pos, Texture2D sprt, ref World world)
+		public PhysicsObject(GameScreen screen, Vector2 pos, string sprt, ref World world, float w, float h)
             : base(screen, pos, sprt)
         {
-            createBody(ref world);
-            // TODO: Construct any child components here
+			width = w;
+			height = h;
+			createBody(ref world);
         }
 
-        protected virtual void createBody(ref World world)
+		protected virtual void createBody(ref World world)
         {
-            float BodyHeight = (Sprite != null) ? UnitConverter.ToSimUnits(Sprite.Height / 2) : 1;
+            float BodyHeight = (Sprite != null) ? UnitConverter.ToSimUnits(height / 2) : 1;
             PhysicsBody = FixtureFactory.CreateCircle(world, BodyHeight, 1);
             PhysicsBody.Body.Position = position;
         }
+
+		public override void postLoadLevel()
+		{
+			PhysicsBody.Shape.Radius *= Scale;
+		}
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting

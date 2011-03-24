@@ -112,9 +112,14 @@
     <Reference Include="System.Net">
       <Private>False</Private>
     </Reference>
+    <Reference Include="TroymiumNET">
+      <HintPath>Vendor\TroymiumNET.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Game\Animation.cs" />
     <Compile Include="Code\Game\Character.cs" />
+    <Compile Include="Code\Game\AnimationManager.cs" />
     <Compile Include="Code\Game\FarseerCamera.cs" />
     <Compile Include="Code\Game\Input.cs" />
     <Compile Include="Code\Game\RigidBlock.cs" />
