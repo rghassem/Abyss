@@ -18,7 +18,7 @@ namespace Abyss.Code.Screen
 
     /// <summary>
     /// The Screen where all the gameplay happens. Contains a lot of GameObjects, and has a FarseerCamera which is used to
-    /// display everything except the HUD (including the FaseerPhysics DebugView). GameScreen is a Singleton.
+    /// display everything except the HUD (including the FaseerPhysics DebugView).
     /// </summary>
     public class GameScreen : Screen
     {

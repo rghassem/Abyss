@@ -59,7 +59,6 @@ namespace Abyss.Code.Game
 
 		/// <summary>
 		/// Called as the last step after all other initialization.
-		/// Physics objects contruct their Physics Bodies here.
 		/// </summary>
 		public virtual void postLoadLevel()
 		{ 
