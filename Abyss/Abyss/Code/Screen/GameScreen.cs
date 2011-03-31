@@ -116,6 +116,20 @@ namespace Abyss.Code.Screen
 			LoadOrExtendMap(filename, true);
 		}
 
+		enum CollisionType : byte {
+			Unknown = 0
+			, None = 1
+			, Solid
+			, SlopeUp
+			, SlopeDown
+			, HalfSlopeUp1
+			, HalfSlopeUp2
+			, HalfSlopeDown1
+			, HalfSlopeDown2
+		}
+
+
+
 		/// <summary>
 		/// Load a map from file and create collision objects for it.  Appends map horizontally if one exists.
 		/// </summary>
@@ -132,12 +146,12 @@ namespace Abyss.Code.Screen
 			Vector2 tileHalfSize = new Vector2(map.TileWidth, map.TileHeight) / 2;
 			Vector2 tileSize = new Vector2(map.TileWidth, map.TileHeight);
 
-			bool[,] levelCollision = new bool[map.Width, map.Height];
+			CollisionType[,] levelCollision = new CollisionType[map.Width, map.Height];
 
 			float defaultZVal = 0.9f;
 
-			// 2 = collision. 1 = no collision. 0 = unknown.
-			List<byte> collision = new List<byte>();
+			// Tile id to collision type mapping.
+			List<CollisionType> collision = new List<CollisionType>();
 
 			foreach (KeyValuePair<string, Tiled.Layer> layer in map.Layers) {
 				defaultZVal -= 0.001f;
@@ -153,13 +167,30 @@ namespace Abyss.Code.Screen
 							for (int i = collision.Count; i < tileId + 1; ++i) collision.Add(0);
 
 							if (props != null && props.ContainsKey("collision")) {
-								collision[tileId] = (byte) (props["collision"].Equals("true", StringComparison.OrdinalIgnoreCase) ? 2 : 1);
+								string value = props["collision"];
+								if (value.Equals("solid", StringComparison.OrdinalIgnoreCase)) {
+									collision[tileId] = CollisionType.Solid;
+								} else if (value.Equals("slopeup", StringComparison.OrdinalIgnoreCase)) {
+									collision[tileId] = CollisionType.SlopeUp;
+								} else if (value.Equals("slopedown", StringComparison.OrdinalIgnoreCase)) {
+									collision[tileId] = CollisionType.SlopeDown;
+								} else if (value.Equals("halfslopeup1", StringComparison.OrdinalIgnoreCase)) {
+									collision[tileId] = CollisionType.HalfSlopeUp1;
+								} else if (value.Equals("halfslopeup2", StringComparison.OrdinalIgnoreCase)) {
+									collision[tileId] = CollisionType.HalfSlopeUp2;
+								} else if (value.Equals("halfslopedown1", StringComparison.OrdinalIgnoreCase)) {
+									collision[tileId] = CollisionType.HalfSlopeDown1;
+								} else if (value.Equals("halfslopedown2", StringComparison.OrdinalIgnoreCase)) {
+									collision[tileId] = CollisionType.HalfSlopeDown2;
+								} else {
+									collision[tileId] = CollisionType.None;
+								}
 							} else {
-								collision[tileId] = 1;
+								collision[tileId] = CollisionType.None;
 							}
 						}
 
-						levelCollision[x, y] |= (collision[tileId] > 1);
+						levelCollision[x, y] = collision[tileId];
 					}
 
 				float z = defaultZVal;
@@ -180,7 +211,7 @@ namespace Abyss.Code.Screen
 				bool hasCollision = false;
 
 				for (int x = 0; x < map.Width; ++x) {
-					if (levelCollision[x, y]) {
+					if (levelCollision[x, y] == CollisionType.Solid) {
 						if (hasCollision) continue;
 						else {
 							hasCollision = true;
@@ -192,7 +223,7 @@ namespace Abyss.Code.Screen
 							int tilesWide = x - firstX;
 							if (tilesWide == 1) continue;
 
-							for (int i = firstX; i <= x; ++i) levelCollision[i, y] = false;
+							for (int i = firstX; i <= x; ++i) levelCollision[i, y] = CollisionType.None;
 
 							AddCollisionRectangle(
 								tileHalfSize * new Vector2(tilesWide, 1.0f)
@@ -204,7 +235,7 @@ namespace Abyss.Code.Screen
 
 				// Create final collision.
 				if (hasCollision) {
-					for (int i = firstX; i < map.Width; ++i) levelCollision[i, y] = false;
+					for (int i = firstX; i < map.Width; ++i) levelCollision[i, y] = CollisionType.None;
 
 					int tilesWide = map.Width - firstX;
 					AddCollisionRectangle(
@@ -220,7 +251,7 @@ namespace Abyss.Code.Screen
 				bool hasCollision = false;
 
 				for (int y = 0; y < map.Height; ++y) {
-					if (levelCollision[x, y]) {
+					if (levelCollision[x, y] == CollisionType.Solid) {
 						if (hasCollision) continue;
 						else {
 							hasCollision = true;
@@ -246,6 +277,104 @@ namespace Abyss.Code.Screen
 						tileHalfSize * new Vector2(1.0f, tilesTall)
 						, new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (map.Height - (float) tilesTall / 2))
 					);
+				}
+			}
+
+			// Traverse map and create non-solid tile shapes.
+			for (int x = 0; x < map.Width; ++x) {
+				for (int y = 0; y < map.Height; ++y) {
+					switch (levelCollision[x, y]) {
+						case CollisionType.Solid:
+							// Already handled.
+							break;
+
+						case CollisionType.SlopeUp: {
+							Vector2 halfsize = UnitConverter.ToSimUnits(tileHalfSize);
+							Vector2 center = UnitConverter.ToSimUnits(new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (y + 0.5f)));
+
+							PolygonShape poly = new PolygonShape();
+							poly.Set(new FarseerPhysics.Common.Vertices(new Vector2[] {
+								center + new Vector2(-halfsize.X, halfsize.Y)
+								, center + new Vector2(halfsize.X, -halfsize.Y)
+								, center + new Vector2(halfsize.X, halfsize.Y)
+							}));
+							WorldBody.CreateFixture(poly);
+							break;
+						}
+
+						case CollisionType.HalfSlopeUp1: {
+							Vector2 halfsize = UnitConverter.ToSimUnits(tileHalfSize);
+							Vector2 center = UnitConverter.ToSimUnits(new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (y + 0.5f)));
+
+							PolygonShape poly = new PolygonShape();
+							poly.Set(new FarseerPhysics.Common.Vertices(new Vector2[] {
+								center + new Vector2(-halfsize.X, halfsize.Y)
+								, center + new Vector2(halfsize.X, 0.0f)
+								, center + new Vector2(halfsize.X, halfsize.Y)
+							}));
+							WorldBody.CreateFixture(poly);
+							break;
+						}
+
+						case CollisionType.HalfSlopeUp2: {
+							Vector2 halfsize = UnitConverter.ToSimUnits(tileHalfSize);
+							Vector2 center = UnitConverter.ToSimUnits(new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (y + 0.5f)));
+
+							PolygonShape poly = new PolygonShape();
+							poly.Set(new FarseerPhysics.Common.Vertices(new Vector2[] {
+								center + new Vector2(-halfsize.X, halfsize.Y)
+								, center + new Vector2(-halfsize.X, 0.0f)
+								, center + new Vector2(halfsize.X, -halfsize.Y)
+								, center + new Vector2(halfsize.X, halfsize.Y)
+							}));
+							WorldBody.CreateFixture(poly);
+							break;
+						}
+
+						case CollisionType.SlopeDown: {
+							Vector2 halfsize = UnitConverter.ToSimUnits(tileHalfSize);
+							Vector2 center = UnitConverter.ToSimUnits(new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (y + 0.5f)));
+
+							PolygonShape poly = new PolygonShape();
+							poly.Set(new FarseerPhysics.Common.Vertices(new Vector2[] {
+								center + new Vector2(-halfsize.X, halfsize.Y)
+								, center + new Vector2(-halfsize.X, -halfsize.Y)
+								, center + new Vector2(halfsize.X, halfsize.Y)
+							}));
+							WorldBody.CreateFixture(poly);
+							break;
+						}
+
+						case CollisionType.HalfSlopeDown1: {
+							Vector2 halfsize = UnitConverter.ToSimUnits(tileHalfSize);
+							Vector2 center = UnitConverter.ToSimUnits(new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (y + 0.5f)));
+
+							PolygonShape poly = new PolygonShape();
+							poly.Set(new FarseerPhysics.Common.Vertices(new Vector2[] {
+								center + new Vector2(-halfsize.X, halfsize.Y)
+								, center + new Vector2(-halfsize.X, -halfsize.Y)
+								, center + new Vector2(halfsize.X, 0.0f)
+								, center + new Vector2(halfsize.X, halfsize.Y)
+							}));
+							WorldBody.CreateFixture(poly);
+							break;
+						}
+
+
+						case CollisionType.HalfSlopeDown2: {
+							Vector2 halfsize = UnitConverter.ToSimUnits(tileHalfSize);
+							Vector2 center = UnitConverter.ToSimUnits(new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (y + 0.5f)));
+
+							PolygonShape poly = new PolygonShape();
+							poly.Set(new FarseerPhysics.Common.Vertices(new Vector2[] {
+								center + new Vector2(-halfsize.X, halfsize.Y)
+								, center + new Vector2(-halfsize.X, 0.0f)
+								, center + new Vector2(halfsize.X, halfsize.Y)
+							}));
+							WorldBody.CreateFixture(poly);
+							break;
+						}
+					}
 				}
 			}
 
