@@ -20,9 +20,10 @@ namespace Abyss.Code.Game
     /// </summary>
     public class RigidBlock : PhysicsObject
     {
-        public RigidBlock(GameScreen screen, Vector2 pos, string sprt, ref World world, float width, float height, float rotation = 1)
-            : base(screen, pos, sprt, ref world, width, height)
+        public RigidBlock(GameScreen screen, Vector2 pos, float width, float height, float rotation = 1)
+            : base(screen, width, height)
         {
+			Position = pos;
 			PhysicsBody.Body.Rotation = rotation;
 			PhysicsBody.Body.Position = pos;
         }

@@ -22,9 +22,20 @@ namespace Abyss.Code.Game
 		//Animation Constants
 		float WALK_CYCLE_LENGTH = 0.5f;
 
-		public PlayerCharacter(GameScreen screen, Vector2 pos, string sprt, ref World world, float width, float height)
-			: base(screen, pos, sprt, ref world, width, height)
+		const int COLLISION_WIDTH = 96;
+		const int COLLISION_HEIGHT = 96;
+
+		public PlayerCharacter(GameScreen screen, SpawnPoint spawn)
+			: this(screen) {
+			Position = UnitConverter.ToSimUnits(spawn.Position);
+		}
+
+		public PlayerCharacter(GameScreen screen)
+			: base(screen, COLLISION_WIDTH, COLLISION_HEIGHT)
         {
+			screen.PC = this;
+			screen.Camera.Subject = this;
+
 			MaxSpeed = 5;
 			MaxAirSpeed = 9;
 			JumpHeight = 30;
@@ -34,6 +45,9 @@ namespace Abyss.Code.Game
 
 			//set scale
 			Scale = 0.8f;
+			
+			animationManager = new AnimationManager("Animations/lundSprite");
+			loadSprite("Animations/lundSprite");
 
 			//add animations
 			animationManager.addAnimation("Run", WALK_CYCLE_LENGTH,

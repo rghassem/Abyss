@@ -23,11 +23,11 @@ namespace Abyss.Code.Game
          *Pixel Coordinates
          *Summery for Contructor
         */
-        private Rectangle Screen;
+        public Rectangle Screen;
         World PhysicsWorld;
         DebugViewXNA Debug;
         GraphicsDevice Device;
-        SpriteBatch spriteBatch;
+        public SpriteBatch spriteBatch;
 
         private readonly int pixelsPerMeter;
 
@@ -142,16 +142,20 @@ namespace Abyss.Code.Game
         /// <param name="texture">The Sprite to draw</param>
         /// <param name="position">Where to draw to the top left corner of the object, in screen coords</param>
         /// <param name="color">The color parameter to pass to spriteBatch.draw()</param>
-        public void record(Texture2D texture, Vector2 position, Color color, Nullable<Rectangle> sourceRectangle,
+        public void record(Texture2D texture, Vector2 position, Color color, Rectangle? sourceRectangle,
 			float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
-			DrawQueue.Enqueue(new drawObjectData(texture, position, color, sourceRectangle, rotation, origin,
-				scale, effects, layerDepth));
+			if (texture == null) return;
+
+			spriteBatch.Draw(texture, position * pixelsPerMeter, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
         }
 		public void record(Texture2D texture, Vector2 position, Color color)
 		{
-			DrawQueue.Enqueue(new drawObjectData(texture, position, color, null, 0, new Vector2(0,0),
-				new Vector2(1,1), SpriteEffects.None, 1));
+			if (texture == null) return;
+
+			spriteBatch.Draw(texture, position * pixelsPerMeter, null,
+							color, 0, Vector2.Zero, Vector2.One,
+							SpriteEffects.None, 1);
 		}
         public void record(Texture2D texture, Vector2 position)
         {
@@ -163,38 +167,20 @@ namespace Abyss.Code.Game
             record(gameObject.Sprite, gameObject.Position, Color.White);
         }
 
-        
-        public void draw()
+		public void beginDraw() {
+			spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, View);
+		}
+
+        public void endDraw()
         {
-                
-            float aspect = (float)Screen.Width / Screen.Height;
-            Matrix scale = Matrix.CreateScale(pixelsPerMeter);
-            Matrix PhysicsView = scale * View *
-                Matrix.CreateTranslation(-Screen.Width * .5f, -Screen.Height * .5f, 0f);
-            
-            spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, View);
-                while(DrawQueue.Count > 0)
-                {
-                    drawObjectData currentObject = DrawQueue.Dequeue();
-                    if (currentObject.texture != null)
-                    {
-                        //Tranform the sprite's position to line up with its physics body
-                        Vector2 screenPos = Vector2.Transform(currentObject.position, scale);
-
-						//not needed so long as sprite's origin is at its center.
-                        //screenPos.X -= (currentObject.texture.Width / 2);
-                        //screenPos.Y -= (currentObject.texture.Height / 2);
-
-                        spriteBatch.Draw(currentObject.texture, screenPos, currentObject.sourceRectangle,
-							currentObject.color, currentObject.rotation, currentObject.origin, currentObject.scale,
-							currentObject.effects,currentObject.layerDepth);
-                    }
-                }
-            spriteBatch.End();
+			spriteBatch.End();
 
             if (bDebugging)
-            {
-                Matrix Projection = Matrix.CreateOrthographic((Screen.Height * aspect), -Screen.Height, 0, 1);
+			{
+				Matrix PhysicsView = Matrix.CreateScale(pixelsPerMeter) * View *
+					Matrix.CreateTranslation(-Screen.Width * .5f, -Screen.Height * .5f, 0f);
+            
+                Matrix Projection = Matrix.CreateOrthographic(Screen.Width, -Screen.Height, 0, 1);
                 Debug.RenderDebugData(ref Projection, ref PhysicsView);
             }
 

@@ -19,8 +19,10 @@ namespace Abyss.Code.Game
     /// </summary>
     public abstract class GameObject : GameComponent
     {
-		public float Rotation;
-		public float Scale;
+		public float Rotation = 0.0f;
+		public float Scale = 1.0f;
+		public float Zindex = 0.5f;
+
 		public Texture2D Sprite { get; private set; }
         public virtual Vector2 Position 
         {
@@ -33,36 +35,35 @@ namespace Abyss.Code.Game
                 position = value;
             }
         }
-		protected Vector2 position;
+		private Vector2 position;
 
 		protected GameScreen environment;
 		protected AnimationManager animationManager;
 		protected string spriteName;
 
-        public GameObject(GameScreen screen, Vector2 pos, string spriteAssetName)
-			: base(screen.Game)
-        {
-			spriteName = spriteAssetName;
+		public GameObject(GameScreen screen)
+				: base(screen.Game) {
 			environment = screen;
-            Position = pos;
+		}
+
+		protected override void Dispose(bool disposing) {
+			environment.removeObject(this);
+			base.Dispose(disposing);
+		}
+
+		public void loadSprite(string spriteAssetName) {
+			spriteName = spriteAssetName;
+
 			if (spriteAssetName != null)
 			{
 				string dummy = AbyssGame.Assests.RootDirectory;
 				Sprite = AbyssGame.Assests.Load<Texture2D>(spriteAssetName);
 				//make dummy animation manager assuming no animations, for now.
-				animationManager = new AnimationManager(Sprite.Width, Sprite.Height);
+				if (animationManager == null) {
+					animationManager = new AnimationManager(Sprite.Width, Sprite.Height);
+				}
 			}
-			Rotation = 0;
-			Scale = 1;
-			environment.Game.addComponent(this);
         }
-
-		/// <summary>
-		/// Called as the last step after all other initialization.
-		/// </summary>
-		public virtual void postLoadLevel()
-		{ 
-		}
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting

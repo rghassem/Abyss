@@ -29,8 +29,8 @@ namespace Abyss
     /// </summary>
     public class AbyssGame : Microsoft.Xna.Framework.Game
     {
-        public int ScreenWidth = 1280;
-        public int ScreenHeight = 720;
+        public static int ScreenWidth = 1280;
+        public static int ScreenHeight = 720;
 
 		#region TroymiumInit
 		

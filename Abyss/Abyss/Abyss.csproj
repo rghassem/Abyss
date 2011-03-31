@@ -128,10 +128,14 @@
     <Compile Include="Code\Game\GameObject.cs" />
     <Compile Include="Code\Game\PhysicsObject.cs" />
     <Compile Include="Code\Game\PlayerCharacter.cs" />
+    <Compile Include="Code\MapLayer.cs" />
     <Compile Include="Code\Screen\GameScreen.cs" />
     <Compile Include="Code\Screen\Screen.cs" />
     <Compile Include="Code\Screen\ScreenManager.cs" />
     <Compile Include="Code\Screen\UnitConverter.cs" />
+    <Compile Include="Code\SpawnController.cs" />
+    <Compile Include="Code\SpawnPoint.cs" />
+    <Compile Include="Code\Tiled.cs" />
     <Compile Include="Code\UserInterface\InterfaceComponent.cs" />
     <Compile Include="Code\UserInterface\OSD\Box.cs" />
     <Compile Include="Code\UserInterface\OSD\OSD.cs" />

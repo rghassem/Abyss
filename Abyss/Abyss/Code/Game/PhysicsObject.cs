@@ -32,35 +32,30 @@ namespace Abyss.Code.Game
             {
                 if (PhysicsBody != null)
                     return PhysicsBody.Body.Position;
-                else return position; 
+                else return base.Position; 
             } 
             set 
             {
                 if (PhysicsBody != null )
                     PhysicsBody.Body.Position = value;
-                else position = value;
+                else base.Position = value;
             }
         }
 
-		public PhysicsObject(GameScreen screen, Vector2 pos, string sprt, ref World world, float w, float h)
-            : base(screen, pos, sprt)
+		public PhysicsObject(GameScreen screen, float w, float h)
+            : base(screen)
         {
 			width = w;
 			height = h;
-			createBody(ref world);
+			createBody(ref screen.world);
         }
 
 		protected virtual void createBody(ref World world)
         {
             float BodyHeight = (Sprite != null) ? UnitConverter.ToSimUnits(height / 2) : 1;
             PhysicsBody = FixtureFactory.CreateCircle(world, BodyHeight, 1);
-            PhysicsBody.Body.Position = position;
+            PhysicsBody.Body.Position = base.Position;
         }
-
-		public override void postLoadLevel()
-		{
-			PhysicsBody.Shape.Radius *= Scale;
-		}
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting

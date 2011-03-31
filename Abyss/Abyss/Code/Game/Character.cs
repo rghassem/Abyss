@@ -61,22 +61,14 @@ namespace Abyss.Code.Game
 			set { } //can't be set, just is true if we currently have a ground.
 		}
 
-		public Character(GameScreen screen, Vector2 pos, string sprt, ref World world, float width, float height)
-			: base(screen, pos, sprt, ref world, width, height)
-        {
-            // TODO: Construct any child components here
-            
-			animationManager = new AnimationManager(spriteName);
-        }
-
-		public override void postLoadLevel()
+		public Character(GameScreen screen, float width, float height)
+			: base(screen, width, height)
 		{
-			base.postLoadLevel();
 			PhysicsBody.Body.BodyType = BodyType.Dynamic;
 
 			PhysicsBody.OnCollision += onCollision;
 			PhysicsBody.OnSeparation += onSeperation;
-		}
+        }
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting
@@ -93,7 +85,7 @@ namespace Abyss.Code.Game
 		{
 			float BodyHeight = (Sprite != null) ? UnitConverter.ToSimUnits(height / 2) : 1;
 			PhysicsBody = FixtureFactory.CreateCircle(world, BodyHeight, 1);
-			PhysicsBody.Body.Position = position;
+			PhysicsBody.Body.Position = base.Position;
 		}
 
         /// <summary>
