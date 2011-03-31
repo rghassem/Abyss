@@ -157,9 +157,7 @@ namespace Abyss
 			};
 			webKit.Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 			webKit.Transparent = true;
-			string dir = System.IO.Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
-			dir = dir.Replace("\\", "/");
-			webKit.NavigateTo("file:///" + dir + "/AbyssContent/AbyssUI.html");
+			webKit.NavigateTo("file:///Content/AbyssUI.html");
 			Console.WriteLine("CURRENT DIRECTORY " + System.IO.Directory.GetCurrentDirectory());
 			// END OF TROYMIUM SUPPORT
 
