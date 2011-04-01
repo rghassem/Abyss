@@ -38,7 +38,7 @@ namespace Abyss.Code.Game
 
 			MaxSpeed = 5;
 			MaxAirSpeed = 9;
-			JumpHeight = 30;
+			JumpHeight = 50;
 			LongJumpBonus = 15;
 			MovementAccel = 10;
 			AirAccel = 2;

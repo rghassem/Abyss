@@ -23,9 +23,12 @@ namespace Abyss.Code.Game
     public class Character : PhysicsObject
     {
 		//Movement Variables
+		const double GROUND_NORMAL_Y_LIMIT = -0.2;
+		const float JUMP_IMPULSE_TIME = 1f;
+
 		protected float MaxSpeed = 8;
 		protected float MaxAirSpeed = 12;
-		protected float JumpHeight = 30;
+		protected float JumpHeight = 20;
 		protected float LongJumpBonus = 15;
 		protected float MovementAccel = 10;
 		protected float AirAccel = 2;
@@ -35,6 +38,8 @@ namespace Abyss.Code.Game
 
 		protected bool inStep;
 		private float timeSinceStep;
+
+		private double prevAngleOfRotation = 0.0f;
 
 		protected bool moveLeft;
 		protected bool moveRight;
@@ -48,7 +53,8 @@ namespace Abyss.Code.Game
 		Vector2 groundVector;
 		Vector2 groundNormal = Vector2.UnitY;
 		float groundSlope;
-		float slopeLimit = 1f;
+		float slopeLimit = 1.3f;
+		float groundStickiness = 3f;
 		HashSet<Fixture> ground = new HashSet<Fixture>();
 		protected bool onGround
 		{
@@ -179,7 +185,7 @@ namespace Abyss.Code.Game
 			{
 				jumping = true;
 				longJump = (moveLeft || moveRight) ? true : false;
-				timeSinceJump = 0.8f; //time to apply upward impulse
+				timeSinceJump = JUMP_IMPULSE_TIME; //time to apply upward impulse
 			}
 
 			if (jumping)
@@ -197,8 +203,12 @@ namespace Abyss.Code.Game
 				}
 			}
 
+			//stick to the ground a little
+			if(onGround)
+				impulse += -groundNormal * groundStickiness;
+
 			PhysicsBody.Body.ApplyLinearImpulse(ref impulse);
-			Console.Out.WriteLine(onGround);
+			//Console.Out.WriteLine(onGround);
 
 			//limit speed
 			if (onGround)
@@ -235,7 +245,7 @@ namespace Abyss.Code.Game
 
 		private bool isGround(WorldManifold manifold)
 		{
-			if (manifold.Normal.Y > 0.5)
+			if (manifold.Normal.Y > GROUND_NORMAL_Y_LIMIT) //which is 0.5
 				return false;
 			return manifold.Points[0].Y < (PhysicsBody.Body.Position.Y + PhysicsBody.Shape.Radius) ||
 					manifold.Points[1].Y < (PhysicsBody.Body.Position.Y + PhysicsBody.Shape.Radius);
@@ -256,7 +266,7 @@ namespace Abyss.Code.Game
 					groundNormal = manifold.Normal;
 					groundVector = getGroundVector();
 					groundSlope = groundVector.Y / groundVector.X;
-					Console.Out.WriteLine("OnCollision called");
+					//Console.Out.WriteLine("OnCollision called");
 				}
 			}
 			return true;
@@ -268,15 +278,18 @@ namespace Abyss.Code.Game
 			Fixture obstacle = (f1 == PhysicsBody) ? f2 : f1;
 
 			ground.Remove(obstacle);
-			Console.Out.WriteLine("OnSeperation called");
+			//Console.Out.WriteLine("OnSeperation called");
 		}
 
 		private void updateRotation()
 		{
 			if (onGround)
 			{
-				double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitY, groundNormal)) - Math.PI;
-				Rotation = ((float)angleOfRotation);
+				double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitX, groundNormal)) - (Math.PI/2);
+				Console.WriteLine(angleOfRotation + "\n");
+				if(angleOfRotation == prevAngleOfRotation)
+					Rotation = ((float)-angleOfRotation);
+				prevAngleOfRotation = angleOfRotation;
 			}
 			else Rotation = 0;
 		}

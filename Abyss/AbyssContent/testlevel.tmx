@@ -3,7 +3,7 @@
  <tileset firstgid="1" source="tilesheet.tsx"/>
  <layer name="Main" width="64" height="32">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3Q2wqAIBCE4aUutAs7vP/LtoKBLHsjFUr9HwzZUNAkAgAAAAAAAABoMWmCZu79IS9bNZtm1xyly9tjOS/yzX9w7Y5Vl7cG09V9HTFn716cd3qw3+5tbJGqazJ9cp71+qd422ySkztG2t/D3/cDwAhOGTFq+gAgAAA=
+   H4sIAAAAAAAAC+3QXQtAQBCF4cEFLtbH//+zZmvVNE0hRLxPnazZVXuIAAAAAAAAAACOqDWtpnn6IjcbNKNm0sxllrt3Zd3LN//B2rszs9y1dTM7txG3jt4l+MaqNvav4u8edTwimWdy8xScjeZZtbG/R9TNJwU54039n/D3/gDwBguX1e1qACAAAA==
   </data>
  </layer>
  <objectgroup name="Objects" width="64" height="32">

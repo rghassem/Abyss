@@ -37,7 +37,7 @@ namespace Abyss.Code.Screen
         private OSD osd;
 
         public const int PIXELS_PER_METER = 50;
-        public const int GRAVITY = 20;
+        public const int GRAVITY = 30;
 
         public GameScreen(AbyssGame game)
         {
