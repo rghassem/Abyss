@@ -37,7 +37,9 @@ namespace Abyss.Code.Screen
         private OSD osd;
 
         public const int PIXELS_PER_METER = 50;
-        public const int GRAVITY = 30;
+		public const int GRAVITY = 30;
+
+		private ParticleEntity ent;
 
         public GameScreen(AbyssGame game)
         {
@@ -53,6 +55,9 @@ namespace Abyss.Code.Screen
 			SpawnController = new SpawnController(this);
 
 			Camera.subjetDistanceToScreenEdge = 700;
+
+			ent = new ParticleEntity(this, "BasicFireball");
+			addObject(ent);
 
 			osd = new OSD();
 			osd.LoadContent();
@@ -380,12 +385,16 @@ namespace Abyss.Code.Screen
 
 			SpawnController.CreateSpawnPoints(map.ObjectGroups.Values, Vector2.Zero, spawnPlayer);
 		}
-
-        public void update(GameTime gameTime)
+      
+	    public void update(GameTime gameTime)
         {
             //no need to update GameObjects, they're GameComponents, and will get the update automatically.
             world.Step(gameTime.ElapsedGameTime.Milliseconds * .001f);
             Camera.update();
+
+			if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
+				ent.Effect.Trigger(new Vector2(Camera.Screen.X + Camera.Screen.Width / 2, Camera.Screen.Y + Camera.Screen.Height / 2));
+			}
 
 			SpawnController.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
         }
@@ -393,12 +402,12 @@ namespace Abyss.Code.Screen
         public void draw(GameTime gameTime) {
 			Camera.beginDraw();
 
-            for (int i = 0; i < GameObjects.Count; i++)
-            {
-                GameObjects.ElementAt<GameObject>(i).draw(gameTime);
-            }
+			foreach (GameObject obj in GameObjects.OrderBy(obj => obj.Zindex)) {
+				obj.draw(gameTime);
+			}
 
 			Camera.endDraw();
+			Camera.drawDebug();
 
 			AbyssGame.spriteBatch.Begin();
 			osd.Draw(gameTime);

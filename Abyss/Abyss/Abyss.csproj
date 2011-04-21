@@ -98,6 +98,10 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="ProjectMercury, Version=3.1.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Vendor\Mercury\X86\ProjectMercury.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -124,6 +128,7 @@
     <Compile Include="Code\Game\AnimationManager.cs" />
     <Compile Include="Code\Game\FarseerCamera.cs" />
     <Compile Include="Code\Game\Input.cs" />
+    <Compile Include="Code\Game\ParticleEntity.cs" />
     <Compile Include="Code\Game\RigidBlock.cs" />
     <Compile Include="Code\Game\GameObject.cs" />
     <Compile Include="Code\Game\PhysicsObject.cs" />

@@ -174,7 +174,10 @@ namespace Abyss.Code.Game
         public void endDraw()
         {
 			spriteBatch.End();
+		}
 
+		public void drawDebug()
+		{
             if (bDebugging)
 			{
 				Matrix PhysicsView = Matrix.CreateScale(pixelsPerMeter) * View *

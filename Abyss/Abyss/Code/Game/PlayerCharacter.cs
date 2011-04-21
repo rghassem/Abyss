@@ -45,6 +45,8 @@ namespace Abyss.Code.Game
 
 			//set scale
 			Scale = 0.8f;
+
+			Zindex = 0.4f;
 			
 			animationManager = new AnimationManager("Animations/lundSprite");
 			loadSprite("Animations/lundSprite");
