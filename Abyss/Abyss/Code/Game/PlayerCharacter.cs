@@ -92,7 +92,7 @@ namespace Abyss.Code.Game
 			{
 				stepLeft();
 				if(onGround)
-					animationManager.playAnim("Run");
+				  animationManager.playAnim("Run");
 			}
      
             if (Input.jumpPressed())
@@ -102,8 +102,19 @@ namespace Abyss.Code.Game
             }
 
 			if (!inStep)
-				animationManager.loopAnim("Idle");
+				playIdleAnim();
         }
 
+		protected override void playMovementAnim()
+		{
+			base.playMovementAnim();
+			animationManager.playAnim("Run");
+		}
+
+		protected override void playIdleAnim()
+		{
+			base.playMovementAnim();
+			animationManager.playAnim("Idle");
+		}
     }
 }

@@ -312,7 +312,7 @@ namespace Abyss.Code.Screen
 								, center + new Vector2(halfsize.X, 0.0f)
 								, center + new Vector2(halfsize.X, halfsize.Y)
 							}));
-							WorldBody.CreateFixture(poly);
+							Fixture f = WorldBody.CreateFixture(poly);
 							break;
 						}
 

@@ -92,6 +92,7 @@ namespace Abyss.Code.Game
 			float BodyHeight = (Sprite != null) ? UnitConverter.ToSimUnits(height / 2) : 1;
 			PhysicsBody = FixtureFactory.CreateCircle(world, BodyHeight, 1);
 			PhysicsBody.Body.Position = base.Position;
+			PhysicsBody.Body.FixedRotation = true;
 		}
 
         /// <summary>
@@ -161,6 +162,7 @@ namespace Abyss.Code.Game
 				if (onGround)
 				{
 					impulse += groundVector * MovementAccel;
+					//playMovementAnim();
 				}
 				else
 					impulse += Vector2.UnitX * AirAccel;
@@ -171,6 +173,7 @@ namespace Abyss.Code.Game
 				if (onGround)
 				{
 					impulse += groundVector * -MovementAccel;
+					//playMovementAnim();
 				}
 				else
 					impulse += Vector2.UnitX * -AirAccel;
@@ -184,7 +187,7 @@ namespace Abyss.Code.Game
 			if (jump && onGround) 
 			{
 				jumping = true;
-				longJump = (moveLeft || moveRight) ? true : false;
+				longJump = (moveLeft || moveRight);
 				timeSinceJump = JUMP_IMPULSE_TIME; //time to apply upward impulse
 			}
 
@@ -207,7 +210,11 @@ namespace Abyss.Code.Game
 			if(onGround)
 				impulse += -groundNormal * groundStickiness;
 
+			//if (!moveLeft && !moveRight && onGround)
+				//groundVector = -groundVector;
+
 			PhysicsBody.Body.ApplyLinearImpulse(ref impulse);
+				
 			//Console.Out.WriteLine(onGround);
 
 			//limit speed
@@ -286,12 +293,19 @@ namespace Abyss.Code.Game
 			if (onGround)
 			{
 				double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitX, groundNormal)) - (Math.PI/2);
-				Console.WriteLine(angleOfRotation + "\n");
-				if(angleOfRotation == prevAngleOfRotation)
-					Rotation = ((float)-angleOfRotation);
+				//Console.WriteLine(angleOfRotation + "\n");
+				//if(angleOfRotation == prevAngleOfRotation)
+					Rotation = ((float) -((angleOfRotation + prevAngleOfRotation)/2) );
 				prevAngleOfRotation = angleOfRotation;
 			}
 			else Rotation = 0;
+		}
+
+		protected virtual void playMovementAnim()
+		{
+		}
+		protected virtual void playIdleAnim()
+		{
 		}
 
 		public override void draw(GameTime gameTime)
@@ -302,6 +316,7 @@ namespace Abyss.Code.Game
 			environment.Camera.record(Sprite, Position, Color.White, animationManager.CurrentFrame, Rotation, origin, new Vector2(Scale, Scale),
 				direction, 0);
 		}
-		
+
+
     }
 }
