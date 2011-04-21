@@ -1,3 +1,5 @@
+#define ENABLE_GUI
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +20,13 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 using Forms = System.Windows.Forms;
 using System.Text;
-
+using ProjectMercury;
+using ProjectMercury.Emitters;
+using ProjectMercury.Modifiers;
+using ProjectMercury.Renderers;
 
 using Abyss.Code.UserInterface.OSD;
+
 
 namespace Abyss
 {
@@ -32,6 +38,7 @@ namespace Abyss
         public static int ScreenWidth = 1280;
         public static int ScreenHeight = 720;
 
+		#if ENABLE_GUI
 		#region TroymiumInit
 		
 		[DllImport("user32.dll")]
@@ -54,6 +61,7 @@ namespace Abyss
 		MouseState oldMouseState;
 		long lastKeystrokeTime = 0;
 		#endregion
+		#endif
 
         #region Static Members
         public static ContentManager Assests;
@@ -66,6 +74,7 @@ namespace Abyss
 
         ScreenManager screenManager;
 
+		public SpriteBatchRenderer renderer;
 
         public AbyssGame()
         {
@@ -75,6 +84,7 @@ namespace Abyss
             Assests = Content;
 
 			// ADDED FOR SUPPORTING TROYMIUM
+			#if ENABLE_GUI
 			graphics.PreferredBackBufferWidth = 1024;
 			graphics.PreferredBackBufferHeight = 768;
 			graphics.PreferredBackBufferFormat = SurfaceFormat.Color;
@@ -100,8 +110,9 @@ namespace Abyss
 
 			TroymiumNET.Init("Content");
 			context = Context.Create();
+			#endif // ENABLE_GUI
+
 			// END OF TROYMIUM SUPPORT
-            
             //osd = new OSD();
         }
 
@@ -124,6 +135,14 @@ namespace Abyss
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 			screenManager = new ScreenManager(this);
+
+			renderer = new SpriteBatchRenderer
+			{
+				GraphicsDeviceService = graphics
+			};
+
+			renderer.LoadContent(Content);
+
 			base.Initialize();
         }
 
@@ -136,6 +155,7 @@ namespace Abyss
 			screenManager.loadGameLevel();
 
 			// ADDED FOR TROYMIUM
+			#if ENABLE_GUI
 
 			// We have to inject our teardown code here because if we let XNA's
 			//  normal disposal handlers run, Chrome's message pump gets confused
@@ -158,8 +178,9 @@ namespace Abyss
 			webKit.Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 			webKit.Transparent = true;
 			webKit.NavigateTo("file:///Content/AbyssUI.html");
-			Console.WriteLine("CURRENT DIRECTORY " + System.IO.Directory.GetCurrentDirectory());
+			//Console.WriteLine("CURRENT DIRECTORY " + System.IO.Directory.GetCurrentDirectory());
 			// END OF TROYMIUM SUPPORT
+			#endif // ENABLE_GUI
 
             // TODO: use this.Content to load your game content here
  
@@ -187,6 +208,7 @@ namespace Abyss
                 this.Exit();
 
 			// BEGIN TROYMIUM SUPPORT
+			#if ENABLE_GUI
 			newKB = Keyboard.GetState();
 			var newMouseState = Mouse.GetState();
 
@@ -246,6 +268,7 @@ namespace Abyss
 			oldMouseState = newMouseState;
 			TroymiumNET.Update();
 			oldKB = newKB;
+			#endif // ENABLE_GUI
 			// END OF TROYMIUM SUPPORT
 
             screenManager.update(gameTime);
@@ -274,6 +297,7 @@ namespace Abyss
 			screenManager.drawActiveScreen(gameTime);
 
 			// ADDED FOR TROYMIUM
+			#if ENABLE_GUI	
 			byte a = 255;
 			long now = DateTime.UtcNow.Ticks;
 			long elapsed = now - fadingSince.GetValueOrDefault(0);
@@ -287,14 +311,19 @@ namespace Abyss
 			}
 
 			spriteBatch.Begin();
+
+			// Draw GUI.
 			spriteBatch.Draw(backingStore, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), new Color(255, 255, 255, a));
 			spriteBatch.End();
+			#endif
 			// END OF TROYMIUM SUPPORT
 			
 
             base.Draw(gameTime);
         }
 
+		#if ENABLE_GUI
+		#region troymiumMethods
 		// START OF TROYMIUM METHODS
 		protected KeyModifier GetModifiers() {
 			KeyboardState kb = Keyboard.GetState();
@@ -395,6 +424,7 @@ namespace Abyss
 			TroymiumNET.Destroy();
 		}
 		// END OF TROYMIUM METHODS
-		  
+		#endregion 
+		#endif // ENABLE_GUI
 	}
 }
