@@ -118,6 +118,9 @@ namespace Abyss {
 				case "spawn":
 					GameObject = new PlayerCharacter(SpawnController.GameScreen, this);
 					break;
+				case "goblin":
+					GameObject = new Goblin(SpawnController.GameScreen, this);
+					break;
 				default:
 					throw new InvalidOperationException("Invalid entity type.");
 			}

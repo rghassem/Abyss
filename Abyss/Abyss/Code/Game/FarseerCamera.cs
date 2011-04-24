@@ -196,7 +196,6 @@ namespace Abyss.Code.Game
         /// </summary>
         public void update()
         {
-            
             scrollView();
         }
 

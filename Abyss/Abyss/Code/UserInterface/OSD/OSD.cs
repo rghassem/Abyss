@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using Abyss;
+using Abyss.Code.Game;
 
 namespace Abyss.Code.UserInterface.OSD
 {
@@ -34,9 +34,9 @@ namespace Abyss.Code.UserInterface.OSD
 
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, PlayerCharacter pc)
         {
-            healthDisplay.Render("Health Display");
+            healthDisplay.Render("Health Display\n"+pc.Health);
             itemDisplay.Render("Item Display");
         }
     }

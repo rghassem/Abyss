@@ -26,6 +26,8 @@ namespace Abyss.Code.Game
 		const double GROUND_NORMAL_Y_LIMIT = -0.2;
 		const float JUMP_IMPULSE_TIME = 1f;
 
+		protected Color DrawColor = Color.White;
+
 		protected float MaxSpeed = 8;
 		protected float MaxAirSpeed = 12;
 		protected float JumpHeight = 20;
@@ -46,15 +48,19 @@ namespace Abyss.Code.Game
 		protected bool jump;
 		protected bool longJump;
 		bool jumping;
+		protected bool pushed = false;
 
 		bool wallSlopeUnderLimit;
 
+		//Particle effects
+		private ParticleEntity dustKickUpParticle;
+
 		float timeSinceJump;
-		Vector2 groundVector;
-		Vector2 groundNormal = Vector2.UnitY;
-		float groundSlope;
+		protected Vector2 groundVector;
+		protected Vector2 groundNormal = Vector2.UnitY;
+		protected float groundSlope;
 		float slopeLimit = 1.3f;
-		float groundStickiness = 3f;
+		protected float groundStickiness = 3f;
 		HashSet<Fixture> ground = new HashSet<Fixture>();
 		protected bool onGround
 		{
@@ -74,6 +80,10 @@ namespace Abyss.Code.Game
 
 			PhysicsBody.OnCollision += onCollision;
 			PhysicsBody.OnSeparation += onSeperation;
+
+			//initialize the particle effect
+			dustKickUpParticle = new ParticleEntity(screen, "Dust");
+			screen.addObject(dustKickUpParticle);
         }
 
         /// <summary>
@@ -104,33 +114,63 @@ namespace Abyss.Code.Game
             // TODO: Add your update code here
 			updateMovement(gameTime);
 			animationManager.animate(gameTime);
+
             base.Update(gameTime);
         }
 
 //Movement code:
 		protected virtual void stepRight()
 		{
-			moveRight = true;
-			moveLeft = false;
-			if (onGround)
-				FacingLeft = false;
-			inStep = true;
-			timeSinceStep = 0;
+			if (!pushed)
+			{
+				moveRight = true;
+				moveLeft = false;
+				if (onGround)
+					FacingLeft = false;
+				inStep = true;
+				timeSinceStep = 0;
+			}
 		}
 
 		protected virtual void stepLeft()
 		{
-			moveLeft = true;
-			moveRight = false;
-			if (onGround)
-				FacingLeft = true;
-			inStep = true;
-			timeSinceStep = 0;
+			if (!pushed)
+			{
+				moveLeft = true;
+				moveRight = false;
+				if (onGround)
+					FacingLeft = true;
+				inStep = true;
+				timeSinceStep = 0;
+			}
 		}
 
-		private void updateStep(GameTime gameTime)
+		/// <summary>
+		/// Pushes the character by the given impulse, disregarding other movement.
+		/// </summary>
+		/// <param name="impulse"></param>
+		protected void push(Vector2 impulse)
+		{
+			moveRight = false;
+			moveLeft = false;
+			PhysicsBody.Body.ApplyLinearImpulse(ref impulse);
+			pushed = true;
+		}
+
+		protected void changeDirection()
+		{
+			FacingLeft = !FacingLeft;
+		}
+
+		protected virtual void updateStep(GameTime gameTime)
 		{
 			timeSinceStep += gameTime.ElapsedGameTime.Milliseconds*0.001f;
+
+			//emit dust particle effect when walking
+			if (onGround)
+				dustKickUpParticle.Effect.Trigger(UnitConverter.ToDisplayUnits(Position)
+					+ new Vector2(0, animationManager.CurrentFrame.Height / 2));
+
 			if (timeSinceStep >= stepTime)
 			{
 				moveLeft = false;
@@ -153,6 +193,7 @@ namespace Abyss.Code.Game
 			{
 				groundVector = getGroundVector();
 				groundSlope = groundVector.Y / groundVector.X;
+				pushed = false;
 			}
 
 			wallSlopeUnderLimit = Math.Abs(groundSlope) < slopeLimit;
@@ -177,11 +218,6 @@ namespace Abyss.Code.Game
 				}
 				else
 					impulse += Vector2.UnitX * -AirAccel;
-			}
-
-			if (!moveLeft && !moveRight && onGround && wallSlopeUnderLimit)
-			{
-				PhysicsBody.Body.LinearVelocity = new Vector2(0, 0);
 			}
 			
 			if (jump && onGround) 
@@ -210,12 +246,7 @@ namespace Abyss.Code.Game
 			if(onGround)
 				impulse += -groundNormal * groundStickiness;
 
-			//if (!moveLeft && !moveRight && onGround)
-				//groundVector = -groundVector;
-
 			PhysicsBody.Body.ApplyLinearImpulse(ref impulse);
-				
-			//Console.Out.WriteLine(onGround);
 
 			//limit speed
 			if (onGround)
@@ -237,8 +268,18 @@ namespace Abyss.Code.Game
 				}
 			}
 
+			if (!moveLeft && !moveRight && onGround && wallSlopeUnderLimit)
+			{
+				PhysicsBody.Body.LinearVelocity = new Vector2(0, 0);
+			}
+
 			//stop any rotation
 			PhysicsBody.Body.AngularVelocity = 0;
+
+			//ignore gravity if we are on the ground and not moving, that way no
+			//sliding down hills.
+			//TODO: Special cases will need to handled, eg what if we're being pushed back.
+			PhysicsBody.Body.IgnoreGravity = (!moveLeft && !moveRight && onGround);
 
 			//reset the controller jump boolean
 			jump = false;
@@ -250,15 +291,17 @@ namespace Abyss.Code.Game
 			return new Vector2(-groundNormal.Y, groundNormal.X);
 		}
 
-		private bool isGround(WorldManifold manifold)
+		protected bool isGround(WorldManifold manifold, Fixture maybeGround)
 		{
-			if (manifold.Normal.Y > GROUND_NORMAL_Y_LIMIT) //which is 0.5
+			if (maybeGround.UserData is PhysicsObject) //if its a physics object, its not the ground
 				return false;
-			return manifold.Points[0].Y < (PhysicsBody.Body.Position.Y + PhysicsBody.Shape.Radius) ||
-					manifold.Points[1].Y < (PhysicsBody.Body.Position.Y + PhysicsBody.Shape.Radius);
+			if (manifold.Normal.Y > GROUND_NORMAL_Y_LIMIT) //which is -0.2
+				return false;
+			return manifold.Points[0].Y < (getFeetPosition().Y);// ||
+					//manifold.Points[1].Y < (PhysicsBody.Body.Position.Y + PhysicsBody.Shape.Radius);
 		}
 
-		private bool onCollision(Fixture f1, Fixture f2, Contact contact)
+		protected virtual bool onCollision(Fixture f1, Fixture f2, Contact contact)
 		{
 			Fixture obstacle = (f1  == PhysicsBody) ? f2 : f1;
 
@@ -267,7 +310,7 @@ namespace Abyss.Code.Game
 			contact.GetWorldManifold(out manifold);
 			if (contact.IsTouching())
 			{
-				if (isGround(manifold))
+				if (isGround(manifold, obstacle))
 				{
 					ground.Add(obstacle);
 					groundNormal = manifold.Normal;
@@ -293,12 +336,23 @@ namespace Abyss.Code.Game
 			if (onGround)
 			{
 				double angleOfRotation = Math.Acos(Vector2.Dot(Vector2.UnitX, groundNormal)) - (Math.PI/2);
-				//Console.WriteLine(angleOfRotation + "\n");
-				//if(angleOfRotation == prevAngleOfRotation)
-					Rotation = ((float) -((angleOfRotation + prevAngleOfRotation)/2) );
-				prevAngleOfRotation = angleOfRotation;
+				if (Math.Abs(angleOfRotation) < Math.PI/4) //don't rotate the image if the angle is steeper than 45d.
+				{
+					Rotation = ((float)-((angleOfRotation + prevAngleOfRotation) / 2));
+					prevAngleOfRotation = angleOfRotation;
+				}
 			}
 			else Rotation = 0;
+		}
+
+		protected virtual Vector2 getFeetPosition()
+		{
+			return PhysicsBody.Body.Position + new Vector2(0, PhysicsBody.Shape.Radius);
+		}
+
+		protected virtual Vector2 getEyePosition()
+		{
+			return PhysicsBody.Body.Position - new Vector2(0, (float)(PhysicsBody.Shape.Radius*0.75));
 		}
 
 		protected virtual void playMovementAnim()
@@ -313,8 +367,15 @@ namespace Abyss.Code.Game
 			Vector2 origin = new Vector2(animationManager.CurrentFrame.Width / 2, animationManager.CurrentFrame.Height / 2);
 			//this just means mirror the sprite if we're not FacingLeft.
 			SpriteEffects direction = (FacingLeft) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-			environment.Camera.record(Sprite, Position, Color.White, animationManager.CurrentFrame, Rotation, origin, new Vector2(Scale, Scale),
+			environment.Camera.record(Sprite, Position, DrawColor, animationManager.CurrentFrame, Rotation, origin, new Vector2(Scale, Scale),
 				direction, 0);
+		}
+
+		protected bool testSeeCharacter(Character targetChar)
+		{
+			Fixture nearestObjectInLine;
+			testLineOfSight(targetChar.getEyePosition(), getEyePosition(), out nearestObjectInLine);
+			return !(nearestObjectInLine != targetChar.PhysicsBody);//something obstructs our view of the target
 		}
 
 

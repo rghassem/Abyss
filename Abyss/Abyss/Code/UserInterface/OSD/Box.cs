@@ -42,16 +42,16 @@ namespace Abyss.Code.UserInterface.OSD
 
         public void LoadTextures()
         {
-            bNorth = AbyssGame.Assests.Load<Texture2D>("Box1\\bNorth");
-            bSouth = AbyssGame.Assests.Load<Texture2D>("Box1\\bSouth");
-            bEast = AbyssGame.Assests.Load<Texture2D>("Box1\\bEast");
-            bWest = AbyssGame.Assests.Load<Texture2D>("Box1\\bWest");
-            background = AbyssGame.Assests.Load<Texture2D>("Box1\\background");
-            cNE = AbyssGame.Assests.Load<Texture2D>("Box1\\cNE");
-            cSE = AbyssGame.Assests.Load<Texture2D>("Box1\\cSE");
-            cNW = AbyssGame.Assests.Load<Texture2D>("Box1\\cNW");
-            cSW = AbyssGame.Assests.Load<Texture2D>("Box1\\cSW");
-            font = AbyssGame.Assests.Load<SpriteFont>("Fonts\\Default");
+            bNorth = AbyssGame.Assets.Load<Texture2D>("Box1\\bNorth");
+            bSouth = AbyssGame.Assets.Load<Texture2D>("Box1\\bSouth");
+            bEast = AbyssGame.Assets.Load<Texture2D>("Box1\\bEast");
+            bWest = AbyssGame.Assets.Load<Texture2D>("Box1\\bWest");
+            background = AbyssGame.Assets.Load<Texture2D>("Box1\\background");
+            cNE = AbyssGame.Assets.Load<Texture2D>("Box1\\cNE");
+            cSE = AbyssGame.Assets.Load<Texture2D>("Box1\\cSE");
+            cNW = AbyssGame.Assets.Load<Texture2D>("Box1\\cNW");
+            cSW = AbyssGame.Assets.Load<Texture2D>("Box1\\cSW");
+            font = AbyssGame.Assets.Load<SpriteFont>("Fonts\\Default");
         }
 
         public Box(int x, int y, int width, int height)

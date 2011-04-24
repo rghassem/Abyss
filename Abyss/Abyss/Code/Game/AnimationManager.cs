@@ -32,7 +32,7 @@ namespace Abyss.Code.Game
 		/// <param name="animListingXML">XML document associating frames in a spritesheet with names.</param>
 		public AnimationManager(string animListingXML)
 		{
-			animSource = AbyssGame.Assests.Load<Dictionary<string, Rectangle>>(animListingXML+"Ref");
+			animSource = AbyssGame.Assets.Load<Dictionary<string, Rectangle>>(animListingXML+"Ref");
 			animSet = new Dictionary<string, Animation>();
 			//Set the initial current frame to the first image in the sprite sheet.
 			int h = animSource.First().Value.Height;

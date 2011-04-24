@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Dynamics.Contacts;
 using Abyss.Code.Screen;
 
 
@@ -24,6 +25,22 @@ namespace Abyss.Code.Game
 
 		const int COLLISION_WIDTH = 96;
 		const int COLLISION_HEIGHT = 96;
+		const int BUMP_OFF_ENEMY_FORCE = 50;
+
+		const uint STARTING_HEALTH = 50;
+
+		private uint health;
+		public uint Health {
+			get
+			{
+				return health;
+			}
+			set
+			{
+				if (!(health <= 0))
+					health = value;
+			}
+		}
 
 		public PlayerCharacter(GameScreen screen, SpawnPoint spawn)
 			: this(screen) {
@@ -56,7 +73,15 @@ namespace Abyss.Code.Game
 				"jog01", "jog02", "jog03", "jog04", "jog05", "jog06", "jog07", "jog08", "jog09", "jog10", "jog11", "jog12", "jog13");
 			animationManager.addAnimation("Idle", 0.5f,
 				"idle");
+
+			//Init heath
+			Health = STARTING_HEALTH;
         }
+
+		protected override void createBody(ref World world)
+		{
+			base.createBody(ref world);
+		}
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting
@@ -117,6 +142,48 @@ namespace Abyss.Code.Game
 		{
 			base.playMovementAnim();
 			animationManager.playAnim("Idle");
+		}
+
+		protected override bool onCollision(Fixture f1, Fixture f2, Contact contact)
+		{
+			Fixture possibleGoblin = (f1  == PhysicsBody) ? f2 : f1;
+			if (possibleGoblin.UserData is Goblin)
+			{
+				Vector2 pushBackImpulse;
+				if(PhysicsBody.Body.LinearVelocity.X > 0)
+					pushBackImpulse = new Vector2(BUMP_OFF_ENEMY_FORCE, PhysicsBody.Body.LinearVelocity.Y);
+				else if (PhysicsBody.Body.LinearVelocity.X < 0)
+					pushBackImpulse = new Vector2(-BUMP_OFF_ENEMY_FORCE, PhysicsBody.Body.LinearVelocity.Y);
+				else //if 0, we're standing still
+				{
+					if (possibleGoblin.Body.LinearVelocity.X > 0)
+						pushBackImpulse = new Vector2(BUMP_OFF_ENEMY_FORCE, PhysicsBody.Body.LinearVelocity.Y);
+					else if (possibleGoblin.Body.LinearVelocity.X < 0)
+						pushBackImpulse = new Vector2(-BUMP_OFF_ENEMY_FORCE, PhysicsBody.Body.LinearVelocity.Y);
+					else //if somehow they are both standing still, leave them alone.
+						pushBackImpulse = Vector2.Zero;
+				}
+				push(pushBackImpulse);
+			}
+			return base.onCollision(f1, f2, contact);
+		}
+
+		/// <summary>
+		/// Deal damage to the player.
+		/// </summary>
+		/// <param name="damage">Amount to subtract from player's health.</param>
+		/// <param name="impulse">Amount of force to push the player back by.</param>
+		/// <returns>True if hit succeeds and will affect the player.</returns>
+		public bool takeHit(GameObject hostileActor, uint damage, Vector2 impulse )
+		{
+			Health -= damage;
+			push(impulse);
+			return true;
+		}
+
+		public bool takeHit(PhysicsObject hostileActor, uint damage)
+		{
+			return takeHit(hostileActor, damage, Vector2.Zero);
 		}
     }
 }

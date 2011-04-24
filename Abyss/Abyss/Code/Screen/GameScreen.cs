@@ -39,14 +39,14 @@ namespace Abyss.Code.Screen
         public const int PIXELS_PER_METER = 50;
 		public const int GRAVITY = 30;
 
-		private ParticleEntity ent;
+		public ParticleEntity explosionParticleEffect;
 
         public GameScreen(AbyssGame game)
         {
 			Game = game;
             world = new World(new Vector2(0, GRAVITY));
             UnitConverter.SetDisplayUnitToSimUnitRatio(PIXELS_PER_METER);
-			Camera = new FarseerCamera(ref AbyssGame.spriteBatch, AbyssGame.Assests, Game.GraphicsDevice,
+			Camera = new FarseerCamera(ref AbyssGame.spriteBatch, AbyssGame.Assets, Game.GraphicsDevice,
 				AbyssGame.ScreenWidth, AbyssGame.ScreenHeight, ref world, PIXELS_PER_METER);
             Camera.viewMode = FarseerCamera.ViewMode.Scroll;
             
@@ -56,8 +56,8 @@ namespace Abyss.Code.Screen
 
 			Camera.subjetDistanceToScreenEdge = 700;
 
-			ent = new ParticleEntity(this, "BasicFireball");
-			addObject(ent);
+			explosionParticleEffect = new ParticleEntity(this, "BasicFireball");
+			addObject(explosionParticleEffect);
 
 			osd = new OSD();
 			osd.LoadContent();
@@ -85,7 +85,6 @@ namespace Abyss.Code.Screen
             addObject(new RigidBlock(this, new Vector2(15, 12), 50, 1, 0.0f));
 			addObject(new RigidBlock(this, new Vector2(20,8), 50, 1, 100.0f));
 			*/
-
 			LoadMap("testlevel.tmx");
         }
 
@@ -153,7 +152,7 @@ namespace Abyss.Code.Screen
 
 			CollisionType[,] levelCollision = new CollisionType[map.Width, map.Height];
 
-			float defaultZVal = 0.9f;
+			float defaultZVal = 0.001f; //changed from 0.9f, was drawing after foreground objects
 
 			// Tile id to collision type mapping.
 			List<CollisionType> collision = new List<CollisionType>();
@@ -393,7 +392,7 @@ namespace Abyss.Code.Screen
             Camera.update();
 
 			if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
-				ent.Effect.Trigger(new Vector2(Camera.Screen.X + Camera.Screen.Width / 2, Camera.Screen.Y + Camera.Screen.Height / 2));
+				explosionParticleEffect.Effect.Trigger(new Vector2(Camera.Screen.X + Camera.Screen.Width / 2, Camera.Screen.Y + Camera.Screen.Height / 2));
 			}
 
 			SpawnController.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
@@ -410,7 +409,7 @@ namespace Abyss.Code.Screen
 			Camera.drawDebug();
 
 			AbyssGame.spriteBatch.Begin();
-			osd.Draw(gameTime);
+			osd.Draw(gameTime, PC);
 			AbyssGame.spriteBatch.End();
         }
     }

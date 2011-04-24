@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent>
+  <Asset Type="ProjectMercury.ParticleEffect">
+    <Item>
+      <Name>Basic Emitter</Name>
+      <Budget>10</Budget>
+      <Term>0.4</Term>
+      <ReleaseQuantity>1</ReleaseQuantity>
+      <Enabled>True</Enabled>
+      <ReleaseSpeed>
+        <Value>50</Value>
+        <Variation>50</Variation>
+      </ReleaseSpeed>
+      <ReleaseColour>
+        <Value>0.5019608 0.2509804 0</Value>
+        <Variation>0 0 0</Variation>
+      </ReleaseColour>
+      <ReleaseOpacity>
+        <Value>1</Value>
+        <Variation>0</Variation>
+      </ReleaseOpacity>
+      <ReleaseScale>
+        <Value>32</Value>
+        <Variation>16</Variation>
+      </ReleaseScale>
+      <ReleaseRotation>
+        <Value>0</Value>
+        <Variation>0</Variation>
+      </ReleaseRotation>
+      <ReleaseImpulse>0 0</ReleaseImpulse>
+      <ParticleTextureAssetName>Cloud001</ParticleTextureAssetName>
+      <Modifiers>
+        <Item Type="ProjectMercury.Modifiers.ColourModifier">
+          <InitialColour>0.545098066 0.270588249 0.07450981</InitialColour>
+          <UltimateColour>0.8235294 0.4117647 0.117647059</UltimateColour>
+        </Item>
+        <Item Type="ProjectMercury.Modifiers.ScaleModifier">
+          <InitialScale>20</InitialScale>
+          <UltimateScale>30</UltimateScale>
+        </Item>
+      </Modifiers>
+      <BlendMode>Alpha</BlendMode>
+      <TriggerOffset>0 0</TriggerOffset>
+      <MinimumTriggerPeriod>0</MinimumTriggerPeriod>
+    </Item>
+    <Name>Dust Particle</Name>
+    <Author>Reza Ghassemi</Author>
+    <Description>Dust particle kicked up when something disturbs dry dirt.</Description>
+  </Asset>
+</XnaContent>

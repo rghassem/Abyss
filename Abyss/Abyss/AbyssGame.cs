@@ -64,7 +64,7 @@ namespace Abyss
 		#endif
 
         #region Static Members
-        public static ContentManager Assests;
+        public static ContentManager Assets;
         public static SpriteBatch spriteBatch;
         public Random RNG = new Random();
         #endregion
@@ -81,7 +81,7 @@ namespace Abyss
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
            // Content.Load<Texture2D>("lud_desaturated_sprite");
-            Assests = Content;
+            Assets = Content;
 
 			// ADDED FOR SUPPORTING TROYMIUM
 			#if ENABLE_GUI

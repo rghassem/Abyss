@@ -56,8 +56,8 @@ namespace Abyss.Code.Game
 
 			if (spriteAssetName != null)
 			{
-				string dummy = AbyssGame.Assests.RootDirectory;
-				Sprite = AbyssGame.Assests.Load<Texture2D>(spriteAssetName);
+				string dummy = AbyssGame.Assets.RootDirectory;
+				Sprite = AbyssGame.Assets.Load<Texture2D>(spriteAssetName);
 				//make dummy animation manager assuming no animations, for now.
 				if (animationManager == null) {
 					animationManager = new AnimationManager(Sprite.Width, Sprite.Height);
