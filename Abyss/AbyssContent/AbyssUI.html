@@ -1,15 +1,37 @@
 <html>
 <head>
-<title> Test </title>
+<title>AbyssUI</title>
+<style type="text/css">
+	#healthBar {
+		width: 200px;
+		border: 5px solid gray;
+		padding-left: 10px;
+		margin-top: 10px;
+		margin-left: 10px;
+		color: green;
+	}
+	#itemsBar {
+		width: 200px;
+		border: 5px solid gray;
+		padding-left: 10px;
+		color: green;		
+		text-align: left;
+		position: absolute;
+		right: 20;
+		bottom: 20;
+	}
+</style>
 </head>
 <body style="color:White;">
-
-<br /><br /><br /><br /><br />	
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet diam lectus. Etiam nisi mauris, commodo id posuere in, facilisis eget mi.<br />
- Donec et mi ligula, et placerat risus. Curabitur vestibulum, purus id varius iaculis, diam arcu fermentum enim, eget congue mauris lorem cursus nisi.<br />
- Fusce molestie orci a sapien dignissim auctor. Curabitur eu neque odio. Mauris laoreet lobortis leo, faucibus elementum sapien egestas sed. <br />
- Duis tristique ullamcorper nunc, vitae dignissim orci commodo vulputate. Vivamus sem lectus, hendrerit non congue aliquam, aliquet a neque. <br />
- In ac libero quis lacus imperdiet vehicula. Aenean quis sem odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. <br />
- Phasellus fringilla aliquam lacus, porta gravida elit porttitor eu.
+<div id="healthBar">
+	<h3 id="healthDisplay">Health Display: </h3>
+	<h4 id="health">100</h4>
+</div>
+<div align="right">
+	<div id="itemsBar">
+		<h3 id="itemsDisplay">Items: </h3>
+		<br /><br /><br />
+	</div>
+</div>
 </body>
 </html>

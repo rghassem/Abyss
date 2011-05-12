@@ -39,5 +39,9 @@ namespace Abyss.Code.Screen
             get { return manager; }
             internal set { manager = value; }
         }
-    }
+
+		public virtual void draw(Microsoft.Xna.Framework.GameTime gameTime) {
+			Console.WriteLine("Drawing Screen");
+		}
+	}
 }

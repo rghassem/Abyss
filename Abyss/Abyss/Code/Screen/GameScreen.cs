@@ -398,7 +398,7 @@ namespace Abyss.Code.Screen
 			SpawnController.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
         }
 
-        public void draw(GameTime gameTime) {
+        public override void draw(GameTime gameTime) {
 			Camera.beginDraw();
 
 			foreach (GameObject obj in GameObjects.OrderBy(obj => obj.Zindex)) {

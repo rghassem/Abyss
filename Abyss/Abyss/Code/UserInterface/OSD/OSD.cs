@@ -36,8 +36,8 @@ namespace Abyss.Code.UserInterface.OSD
 
         public void Draw(GameTime gameTime, PlayerCharacter pc)
         {
-            healthDisplay.Render("Health Display\n"+pc.Health);
-            itemDisplay.Render("Item Display");
+            //healthDisplay.Render("Health Display\n"+pc.Health);
+            //itemDisplay.Render("Item Display");
         }
     }
 }

@@ -37,8 +37,8 @@ namespace Abyss.Code.Screen
 
         public void drawActiveScreen(GameTime gameTime)
         {
-			//ScreenStack.Peek().draw(gameTime);
-            gameScreen.draw(gameTime);
+			ScreenStack.Peek().draw(gameTime);
+            //gameScreen.draw(gameTime);
         }
     }
 }
