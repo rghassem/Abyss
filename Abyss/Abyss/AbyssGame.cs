@@ -75,8 +75,10 @@ namespace Abyss
 		public SpriteBatchRenderer renderer;
 		public bool isPaused = false;
 		private float elapsedTime;
-		private float threshold = 500.0f;
+		private float threshold = 250.0f;
 		private int tempHealth = 100;
+
+		public int currentWeapon = 0;
 
         public AbyssGame()
         {
@@ -205,32 +207,36 @@ namespace Abyss
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) {
-				if(elapsedTime > threshold) {
-					if (isPaused) {
-						webKit.NavigateTo("file:///Content/AbyssUI.html");
-					}
-					else {
-						webKit.NavigateTo("file:///Content/Pause.html");
-					}
-					isPaused = !isPaused;
-					//webKit.ExecuteJavascript("document.body.style.backgroundColor = '#AA0000';");
-					//this.Exit();
-					elapsedTime = 0.0f;
+            if (Input.pausePressed()) {
+				if (isPaused) {
+					webKit.NavigateTo("file:///Content/AbyssUI.html");
+				}
+				else {
+					webKit.NavigateTo("file:///Content/Pause.html");
+				}
+				isPaused = !isPaused;
+				//this.Exit();
+			}
+
+			if (Input.jumpPressed())
+			{
+				if(currentWeapon >= 2) {
+					currentWeapon = 0;
+				} else {
+					currentWeapon++;
 				}
 			}
 
 			if (elapsedTime > threshold) {
 				if (Keyboard.GetState().IsKeyDown(Keys.U)) {
 					tempHealth -= 5;
-					/* These two lines are the only lines we actually need, rest is for testing purposes only: */
-					String command = "document.getElementById('health').innerHTML = '" + tempHealth + "';";
-					webKit.ExecuteJavascript(command);
-					/* Only these two lines were necessary*/
+					webKit.ExecuteJavascript("updateHealth("+tempHealth+");");
+					webKit.ExecuteJavascript("swapWeapon(" + currentWeapon + ");");
+					Console.WriteLine("WEAPON: " + currentWeapon);
 				}
 				elapsedTime = 0.0f;
 			}
-                
+            
 
 			// BEGIN TROYMIUM SUPPORT
 			#if ENABLE_GUI
