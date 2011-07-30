@@ -28,6 +28,9 @@ namespace Abyss.Code.Game
 		const Keys invKey = Keys.Enter;
 		const Buttons invButton = Buttons.Y;
 
+		const Keys pauseKey = Keys.Escape;
+		const Buttons pauseButton = Buttons.Start;
+
 		/// <summary>
 		/// True if Down has just been pressed (not held down since last frame)
 		/// </summary>
@@ -133,6 +136,18 @@ namespace Abyss.Code.Game
 				!OldKeyboard.IsKeyDown(invKey)) ||
 				(GamePad.GetState(PlayerIndex.One).IsButtonDown(invButton) &&
 				!OldGamepad.IsButtonDown(invButton));
+		}
+		/// <summary>
+		/// True if the pause button has just been pressed (not held down since last frame)
+		/// </summary>
+		/// <returns></returns>
+		public static bool pausePressed()
+		{
+			return
+				(Keyboard.GetState().IsKeyDown(pauseKey) && 
+				!OldKeyboard.IsKeyDown(pauseKey)) ||
+				(GamePad.GetState(PlayerIndex.One).IsButtonDown(pauseButton) && 
+				!OldGamepad.IsButtonDown(pauseButton));
 		}
 
 		/// <summary>

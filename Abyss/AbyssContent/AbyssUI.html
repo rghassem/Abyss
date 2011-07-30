@@ -10,28 +10,55 @@
 		margin-left: 10px;
 		color: green;
 	}
-	#itemsBar {
-		width: 200px;
-		border: 5px solid gray;
-		padding-left: 10px;
-		color: green;		
-		text-align: left;
+	#items {
 		position: absolute;
-		right: 20;
 		bottom: 20;
+		right: 20;
+		vertical-align: middle;
+	}
+	.itemBox {
+		float: right;
+		margin-right: 20px;
+		width: 80px;
+		height: 122px;
 	}
 </style>
+<script type="text/javascript">
+	function updateHealth(health) {
+		document.getElementById('health').innerHTML = health;
+	}
+	function swapWeapon(itemNumber) {
+		var disableFirst, disableSecond;
+		switch (itemNumber) {
+			case 0:
+				disableFirst = "item1";
+				disableSecond = "item2";
+				break;
+			case 1:
+				disableFirst = "item0";
+				disableSecond = "item2";
+				break;
+			case 2:
+				disableFirst = "item0";
+				disableSecond = "item1";
+				break;
+			default:
+		}
+		document.getElementById(disableFirst).style.border = "0px";
+		document.getElementById(disableSecond).style.border = "0px";
+		document.getElementById("item" + itemNumber).style.border = "5px dashed green";
+	}
+</script>
 </head>
 <body style="color:White;">
 <div id="healthBar">
 	<h3 id="healthDisplay">Health Display: </h3>
 	<h4 id="health">100</h4>
 </div>
-<div align="right">
-	<div id="itemsBar">
-		<h3 id="itemsDisplay">Items: </h3>
-		<br /><br /><br />
-	</div>
+<div id="items" align="right">
+	<div class="itemBox" id="item2"><img src="Rocket.png" alt="Error"/></div>
+	<div class="itemBox" id="item1"><img src="Pin.png" alt="Error" /></div>
+	<div class="itemBox" id="item0"><img src="Bomb.png" alt="Error" /></div>
 </div>
 </body>
 </html>
