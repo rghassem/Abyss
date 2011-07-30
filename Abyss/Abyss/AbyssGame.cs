@@ -235,14 +235,14 @@ namespace Abyss
 			}
 
 			if (elapsedTime > threshold) {
-				//if (Keyboard.GetState().IsKeyDown(Keys.U)) {
+				if (Keyboard.GetState().IsKeyDown(Keys.U)) {
 					//tempHealth -= 5;
 					webKit.ExecuteJavascript("updateHealth("+tempHealth+");");
 					webKit.ExecuteJavascript("swapWeapon(" + currentWeapon + ");");
 					Console.WriteLine("WEAPON: " + currentWeapon);
 				}
 				elapsedTime = 0.0f;
-			}
+		}
             
 
 			// BEGIN TROYMIUM SUPPORT
