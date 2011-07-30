@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.DebugViewXNA;
+using Abyss.Code.Screen;
 
 namespace Abyss.Code.Game
 {
@@ -28,6 +29,17 @@ namespace Abyss.Code.Game
         DebugViewXNA Debug;
         GraphicsDevice Device;
         public SpriteBatch spriteBatch;
+
+		//Lighting
+		public List<LightSource> lightSources;
+		Matrix lightView = Matrix.Identity;
+		Vector2 lightPosition;
+
+		//Quad
+		Quad quad;
+		Matrix QuadView, QuadProjection;
+		BasicEffect quadEffect;
+		VertexDeclaration quadVertexDecl;
 
         private readonly int pixelsPerMeter;
 
@@ -54,10 +66,6 @@ namespace Abyss.Code.Game
         /// The current ViewMode
         /// </summary>
         public ViewMode viewMode {get; set;}
-
-
-        //All objects in DrawQueue are drawn when draw() is called.
-        private Queue<drawObjectData> DrawQueue = new Queue<drawObjectData>(10); //random number. 
 
         //SpriteBatch Parameters
         SpriteSortMode sortMode { get; set; }
@@ -126,13 +134,39 @@ namespace Abyss.Code.Game
             samplerState = SamplerState.LinearClamp;
             depthStencilState = DepthStencilState.Default; 
             rasterizerState = RasterizerState.CullCounterClockwise;
-            effect = null;
+			effect = null;
             View = Matrix.Identity;
 
             bDebugging = true;
             bUseMKSCoordinates = true;
 
             DebugViewXNA.LoadContent(Device, content);
+
+			//Lighting stuff
+			lightSources = new List<LightSource>();
+			effect = content.Load<Effect>("Lighting");
+
+			//Quad
+			quad = new Quad(Vector3.Zero, Vector3.Backward, Vector3.Up, 2f, 2.0f);
+			QuadView = Matrix.Identity;// Matrix.CreateLookAt(new Vector3(0, 0, 2), Vector3.Zero, Vector3.Up);
+			QuadProjection = Matrix.Identity;// CreatePerspectiveFieldOfView(MathHelper.PiOver4, 4.0f / 3.0f, 1, 500);
+
+			quadEffect = new BasicEffect(Device);
+			//quadEffect.EnableDefaultLighting();
+
+			quadEffect.World = Matrix.Identity;
+			quadEffect.View = QuadView;
+			Matrix quadProjection = Matrix.CreateScale(1280, 720, 1) * Matrix.CreateLookAt(new Vector3(0, 0, 2), Vector3.Zero, Vector3.Down); ;
+			effect.Parameters["Orthographic"].SetValue(quadProjection);
+			quadEffect.TextureEnabled = true;
+
+			quadVertexDecl = new VertexDeclaration(new VertexElement[]
+				{
+					new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+					new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0),
+					new VertexElement(24, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0)
+				}
+			);
         }
 
         /// <summary>
@@ -167,11 +201,11 @@ namespace Abyss.Code.Game
             record(gameObject.Sprite, gameObject.Position, Color.White);
         }
 
-		public void beginDraw() {
-			spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, View);
+		public void beginRecord() {
+			spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, null, View);
 		}
 
-        public void endDraw()
+        public void endRecord()
         {
 			spriteBatch.End();
 		}
@@ -189,6 +223,121 @@ namespace Abyss.Code.Game
 
         }
 
+		/// <summary>
+		/// Draws what the camera "recorded" this frame to the screen. Applies pixel shaders to renderTarget and
+		/// draws it to the backbuffer.
+		/// </summary>
+		public void Draw(RenderTarget2D rt)
+		{
+			/*spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, Matrix.Identity);
+			spriteBatch.Draw(rt, new Vector2(0, 0), null, Color.White);
+			spriteBatch.End();*/
+
+			/*VertexBuffer vb = new VertexBuffer(Device, VertexPositionColorTexture.VertexDeclaration,
+				quad.Vertices.Length, BufferUsage.WriteOnly);
+			vb.SetData(quad.Vertices);
+			Device.SetVertexBuffer(vb);*/
+			//vertexBuffer.SetData(vertices);
+			//quadEffect.Begin();
+			Device.Textures[0] = rt;
+
+			//myVertexBuffer = new VertexBuffer(device, VertexPositionColorNormal.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
+			//myVertexBuffer.SetData(vertices);
+
+			float radius = pixelsPerMeter; //hardcoding this for quick results
+			//the center of the player character's position
+			Vector2 center = UnitConverter.ToDisplayUnits(Subject.Position);
+			//center.X -= radius/2;
+			//center.Y += radius;
+			center = convertToShaderSpace(center);
+			
+
+			List<Vector2> playerVertices = new List<Vector2>();
+			List<Vector2> playerNormals = new List<Vector2>();
+			Vector2 angle = Vector2.UnitX;
+
+			Vector2 newVertex;
+			Vector2 currentPoint;
+			Matrix m;
+			Vector2 n;
+			const int numVerticesInCircle = 20;
+			for (int i = 0; i < numVerticesInCircle; i++)
+			{
+				newVertex = new Vector2(1, 0);
+				m = Matrix.CreateRotationZ(0.314159265f*i);
+				newVertex = Vector2.Transform(newVertex, m);
+				newVertex *= radius;
+				newVertex = Vector2.Transform(newVertex, Matrix.CreateTranslation(center.X, center.Y, 0));
+				playerVertices.Add(newVertex);
+			}
+
+			for (int i = 0; i < numVerticesInCircle; i++)
+			{
+				currentPoint = playerVertices[i];
+				n = currentPoint - center;
+				n.Normalize();
+				playerNormals.Add(n);
+			}
+
+			List<bool> backFacing = new List<bool>(numVerticesInCircle);
+			for (int i = 0; i < numVerticesInCircle; i++)
+				backFacing.Add(false);
+			for (int i = 0; i < numVerticesInCircle; i++)
+			{
+				currentPoint = playerNormals[i];
+				n = lightPosition - currentPoint;
+				n.Normalize();
+				float lightAngle = Vector2.Dot(currentPoint, n);
+				backFacing[i] = (lightAngle <= 0);
+			}
+
+			bool foundOne = false;
+			Vector2[] edgeVertices = new Vector2[2];
+			float[] pointIndices = new float[2];
+			for (int i = 0; i < numVerticesInCircle; i++)
+			{
+				if (backFacing[i] != backFacing[(i + 1) % numVerticesInCircle])
+					if (!foundOne)
+					{
+						edgeVertices[0] = playerVertices[i];
+						pointIndices[0] = i;
+						foundOne = true;
+					}
+					else
+					{
+						edgeVertices[1] = playerVertices[i];
+						pointIndices[1] = i;
+					}
+			}
+
+			Vector2 dir = (center - lightPosition);
+			Vector2 vertex1;
+			Vector2 vertex2;
+			float length = dir.Length() + radius;
+			effect.Parameters["distanceToShadowCaster"].SetValue(length);
+			dir = (edgeVertices[0] - lightPosition);
+			dir.Normalize();
+			vertex1 = (dir * 1000);
+			effect.Parameters["shadow_vertex1"].SetValue(vertex1);
+
+			dir = (edgeVertices[1] - lightPosition);
+			dir.Normalize();
+			vertex2 = (dir * 1000);
+			effect.Parameters["shadow_vertex2"].SetValue(vertex2);
+			vertex1 = vertex1 - lightPosition;
+			vertex2 = vertex2 - lightPosition;
+			vertex2.Normalize();
+			vertex1.Normalize();
+			float tester = Vector2.Dot(vertex2, vertex1);
+
+			foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+			{
+				pass.Apply();
+
+				Device.DrawUserIndexedPrimitives<VertexPositionColorTexture>(
+					PrimitiveType.TriangleList, quad.Vertices, 0, 4, quad.Indices, 0, 2);
+			}
+		}
 
         /// <summary>
         /// Allows the camera to update its View transform based on the position of the subject.
@@ -196,7 +345,11 @@ namespace Abyss.Code.Game
         /// </summary>
         public void update()
         {
+			if (Input.pickUpPressed() )
+				bDebugging = !bDebugging;
+
             scrollView();
+			updateLights();
         }
 
         private void scrollView()
@@ -226,46 +379,105 @@ namespace Abyss.Code.Game
 
                 Matrix scroll = Matrix.CreateTranslation(-scrollX, -scrollY, 0);
                 // Matrix scroll = Matrix.CreateTranslation(100, 10, 0);
+
                 View = Matrix.Multiply(View, scroll);
+
+				//Keep a seperate view matrix for lights
+				Matrix ls = Matrix.CreateTranslation(-scrollX, scrollY, 0);
+				lightView = Matrix.Multiply(lightView, ls);
+
                 //transform the screen variable as well
                 Screen = new Rectangle((int)(Screen.X + scrollX), (int)(Screen.Y + scrollY),
                     Screen.Width, Screen.Height);
             }
         }
 
+		private void updateLights()
+		{
+			if (lightSources.Count > 0)
+			{
+				lightPosition = convertToShaderSpace(lightSources[0].Position);
+				effect.Parameters["LightPosition"].SetValue(lightPosition);
+			}
+		}
 
-        /// <summary>
-        /// Internal struct used to store data on objects to be drawn. They are all drawn at once when
-        /// draw() is called, in the order they were added to the Draw Queue. Call record() to
-        /// add an object to the Draw Queue.
-        /// </summary>
-        internal struct drawObjectData
-        {
-            public Texture2D texture;
-            public Vector2 position;
-            public Color color;
-
-			public Nullable<Rectangle> sourceRectangle;
-			public float rotation;
-			public Vector2 origin;
-			public Vector2 scale;
-			public SpriteEffects effects;
-			public float layerDepth;
-
-            public drawObjectData(Texture2D t, Vector2 p, Color c, Nullable<Rectangle> rec, float rot,
-				Vector2 orig, Vector2 s, SpriteEffects fx, float ld)
-            {
-                texture = t;
-                position = p;
-                color = c;
-				sourceRectangle = rec;
-				rotation = rot;
-				origin = orig;
-				scale = s;
-				effects = fx;
-				layerDepth = ld;
-            }
-        }
+		private Vector2 convertToShaderSpace(Vector2 v)
+		{
+			Vector2 result = Vector2.Transform(v, View);
+			result.Y -= 720;
+			result = Vector2.Reflect(result, Vector2.UnitX);
+			return result;
+		}
 
     }
+
+	public struct Quad
+	{
+		public Vector3 Origin;
+		public Vector3 UpperLeft;
+		public Vector3 LowerLeft;
+		public Vector3 UpperRight;
+		public Vector3 LowerRight;
+		public Vector3 Normal;
+		public Vector3 Up;
+		public Vector3 Left;
+
+		public VertexPositionColorTexture[] Vertices;
+		public int[] Indices;
+
+		public Quad(Vector3 origin, Vector3 normal, Vector3 up, float width, float height)
+		{
+			Vertices = new VertexPositionColorTexture[4];
+			Indices = new int[6];
+			Origin = origin;
+			Normal = normal;
+			Up = up;
+
+			// Calculate the quad corners
+			Left = Vector3.Cross(normal, Up);
+			Vector3 uppercenter = (Up * height / 2) + origin;
+			UpperLeft = uppercenter + (Left * width / 2);
+			UpperRight = uppercenter - (Left * width / 2);
+			LowerLeft = UpperLeft - (Up * height);
+			LowerRight = UpperRight - (Up * height);
+
+			FillVertices();
+		}
+
+		private void FillVertices()
+		{
+			// Fill in texture coordinates to display full texture
+			// on quad
+			Vector2 textureUpperLeft = new Vector2(0.0f, 0.0f);
+			Vector2 textureUpperRight = new Vector2(1.0f, 0.0f);
+			Vector2 textureLowerLeft = new Vector2(0.0f, 1.0f);
+			Vector2 textureLowerRight = new Vector2(1.0f, 1.0f);
+
+			// Provide a normal for each vertex
+			for (int i = 0; i < Vertices.Length; i++)
+			{
+				Vertices[i].Color = Color.White;
+			}
+
+			// Set the position and texture coordinate for each
+			// vertex
+			Vertices[0].Position = LowerLeft;
+			Vertices[0].TextureCoordinate = textureLowerLeft;
+			Vertices[1].Position = UpperLeft;
+			Vertices[1].TextureCoordinate = textureUpperLeft;
+			Vertices[2].Position = LowerRight;
+			Vertices[2].TextureCoordinate = textureLowerRight;
+			Vertices[3].Position = UpperRight;
+			Vertices[3].TextureCoordinate = textureUpperRight;
+
+			// Set the index buffer for each vertex, using
+			// clockwise winding
+			Indices[0] = 0;
+			Indices[1] = 1;
+			Indices[2] = 2;
+			Indices[3] = 2;
+			Indices[4] = 1;
+			Indices[5] = 3;
+		}
+	}
 }

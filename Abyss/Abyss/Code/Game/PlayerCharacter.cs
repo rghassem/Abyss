@@ -20,6 +20,7 @@ namespace Abyss.Code.Game
     /// </summary>
     public class PlayerCharacter : Character
     {
+
 		//Animation Constants
 		float WALK_CYCLE_LENGTH = 0.5f;
 
@@ -60,22 +61,29 @@ namespace Abyss.Code.Game
 			MovementAccel = 10;
 			AirAccel = 2;
 
+			//Jumping stuff
+			JUMP_IMPULSE_TIME = 1f;
+			JUMPING_ANIM_TIME = 2f;
+
 			//set scale
 			Scale = 0.8f;
 
 			Zindex = 0.4f;
 			
-			animationManager = new AnimationManager("Animations/lundSprite");
-			loadSprite("Animations/lundSprite");
+			animationManager = new AnimationManager("Animations/lundSprite2");
+			loadSprite("Animations/lundSprite2");
 
 			//add animations
 			animationManager.addAnimation("Run", WALK_CYCLE_LENGTH,
-				"jog01", "jog02", "jog03", "jog04", "jog05", "jog06", "jog07", "jog08", "jog09", "jog10", "jog11", "jog12", "jog13");
+				"jog", "jog01", "jog02", "jog03", "jog04", "jog05", "jog06", "jog07", "jog08", "jog09", "jog10", "jog11", "jog12");
 			animationManager.addAnimation("Idle", 0.5f,
 				"idle");
+			animationManager.addAnimation("Jump", JUMPING_ANIM_TIME, "jump01", "jump02");
+			animationManager.addAnimation("In-Jump", 0.1f, "jump03");
 
 			//Init heath
 			Health = STARTING_HEALTH;
+
         }
 
 		protected override void createBody(ref World world)
@@ -111,25 +119,26 @@ namespace Abyss.Code.Game
 			if (Input.isRightHeld())
 			{
 				stepRight();
-				if(onGround)
-					animationManager.playAnim("Run");
+				//if(onGround)
+					//animationManager.playAnim("Run");
 			}
 
 			if (Input.isLeftHeld())
 			{
 				stepLeft();
-				if(onGround)
-				  animationManager.playAnim("Run");
+				//if(onGround)
+				 // animationManager.playAnim("Run");
 			}
      
             if (Input.jumpPressed())
             {
 				jump = true;
-				animationManager.playAnim("Idle");
+				//if (onGround)
+					//animationManager.playAnim("Jump");
             }
 
-			if (!inStep)
-				playIdleAnim();
+			//if (!inStep && !jumping)
+				//playIdleAnim();
         }
 
 		protected override void playMovementAnim()
@@ -140,8 +149,20 @@ namespace Abyss.Code.Game
 
 		protected override void playIdleAnim()
 		{
-			base.playMovementAnim();
+			base.playIdleAnim();
 			animationManager.playAnim("Idle");
+		}
+
+		protected override void playJumpAnim()
+		{
+			base.playJumpAnim();
+			animationManager.playAnim("Jump");
+		}
+
+		protected override void playJumpingAnim()
+		{
+			base.playJumpingAnim();
+			  animationManager.playAnim("In-Jump");
 		}
 
 		protected override bool onCollision(Fixture f1, Fixture f2, Contact contact)
@@ -177,6 +198,7 @@ namespace Abyss.Code.Game
 		public bool takeHit(GameObject hostileActor, uint damage, Vector2 impulse )
 		{
 			Health -= damage;
+			environment.Game.setHealthDisplay((int)Health);
 			push(impulse);
 			return true;
 		}

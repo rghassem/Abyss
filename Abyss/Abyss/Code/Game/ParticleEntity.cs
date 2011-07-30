@@ -48,10 +48,10 @@ namespace Abyss.Code.Game
 
 		public override void draw(GameTime gameTime)
 		{
-			gameScreen.Camera.endDraw();
+			gameScreen.Camera.endRecord();
 			Matrix tform = gameScreen.Camera.View;
 			abyss.renderer.RenderEffect(Effect, ref tform);
-			gameScreen.Camera.beginDraw();
+			gameScreen.Camera.beginRecord();
 			base.draw(gameTime);
 		}
 	}

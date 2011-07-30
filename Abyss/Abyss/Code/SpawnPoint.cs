@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using Abyss.Code.Game;
+using Abyss.Code.Screen;
 
 namespace Abyss {
 	public class SpawnPoint {
@@ -120,6 +121,9 @@ namespace Abyss {
 					break;
 				case "goblin":
 					GameObject = new Goblin(SpawnController.GameScreen, this);
+					break;
+				case "light":
+					GameObject = new LightSource(SpawnController.GameScreen, this.Position);
 					break;
 				default:
 					throw new InvalidOperationException("Invalid entity type.");

@@ -13,7 +13,7 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
-    <XnaProfile>Reach</XnaProfile>
+    <XnaProfile>HiDef</XnaProfile>
     <XnaCrossPlatformGroupID>006edbd5-2b58-4e84-a2e4-943d0dbd6c17</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
@@ -129,6 +129,7 @@
     <Compile Include="Code\Game\FarseerCamera.cs" />
     <Compile Include="Code\Game\Goblin.cs" />
     <Compile Include="Code\Game\Input.cs" />
+    <Compile Include="Code\Game\LightSource.cs" />
     <Compile Include="Code\Game\ParticleEntity.cs" />
     <Compile Include="Code\Game\RigidBlock.cs" />
     <Compile Include="Code\Game\GameObject.cs" />

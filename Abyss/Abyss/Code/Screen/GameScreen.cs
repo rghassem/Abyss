@@ -41,6 +41,10 @@ namespace Abyss.Code.Screen
 
 		public ParticleEntity explosionParticleEffect;
 
+		private readonly int pixelsPerMeter;
+
+		RenderTarget2D rt;
+
         public GameScreen(AbyssGame game)
         {
 			Game = game;
@@ -61,7 +65,20 @@ namespace Abyss.Code.Screen
 
 			osd = new OSD();
 			osd.LoadContent();
+
+			rt = new RenderTarget2D(Game.GraphicsDevice, Game.GraphicsDevice.PresentationParameters.BackBufferWidth,
+				Game.GraphicsDevice.PresentationParameters.BackBufferHeight);
         }
+
+		/// <summary>
+		/// Register a given light source with the camera, so its lighting can be applied as a pixel shader
+		/// effect.
+		/// </summary>
+		/// <param name="ls"></param>
+		public void registerLightSource(LightSource ls)
+		{
+			Camera.lightSources.Add(ls);
+		}
 
 		public void addObject(GameObject obj) {
 			Game.addComponent(obj);
@@ -399,18 +416,21 @@ namespace Abyss.Code.Screen
         }
 
         public override void draw(GameTime gameTime) {
-			Camera.beginDraw();
-
+			Game.GraphicsDevice.SetRenderTarget(rt);
+			Camera.beginRecord();
 			foreach (GameObject obj in GameObjects.OrderBy(obj => obj.Zindex)) {
 				obj.draw(gameTime);
 			}
+			Camera.endRecord();
+			Game.GraphicsDevice.SetRenderTarget(null); //point the render target back to the backbuffer
 
-			Camera.endDraw();
+			Camera.Draw(rt);
+
 			Camera.drawDebug();
 
-			AbyssGame.spriteBatch.Begin();
-			osd.Draw(gameTime, PC);
-			AbyssGame.spriteBatch.End();
+			//AbyssGame.spriteBatch.Begin();
+			//osd.Draw(gameTime, PC);
+			//AbyssGame.spriteBatch.End();
         }
     }
 }

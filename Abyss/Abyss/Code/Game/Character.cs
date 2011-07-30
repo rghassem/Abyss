@@ -24,7 +24,8 @@ namespace Abyss.Code.Game
     {
 		//Movement Variables
 		const double GROUND_NORMAL_Y_LIMIT = -0.2;
-		const float JUMP_IMPULSE_TIME = 1f;
+		protected float JUMP_IMPULSE_TIME = 1f;
+		protected float JUMPING_ANIM_TIME = 0.2f;
 
 		protected Color DrawColor = Color.White;
 
@@ -43,19 +44,23 @@ namespace Abyss.Code.Game
 
 		private double prevAngleOfRotation = 0.0f;
 
-		protected bool moveLeft;
-		protected bool moveRight;
+		//Private Jump Variables
+		private bool moveLeft;
+		private bool moveRight;
 		protected bool jump;
-		protected bool longJump;
-		bool jumping;
-		protected bool pushed = false;
+		private bool longJump;
+		private bool jumping;
+		private bool pushed = false;
+
+		private float timeTillEndJump;
+		private float timeTillEndJumpAnim;
+		private float timeTillEndJumpPrep;
 
 		bool wallSlopeUnderLimit;
 
 		//Particle effects
 		private ParticleEntity dustKickUpParticle;
 
-		float timeSinceJump;
 		protected Vector2 groundVector;
 		protected Vector2 groundNormal = Vector2.UnitY;
 		protected float groundSlope;
@@ -84,6 +89,8 @@ namespace Abyss.Code.Game
 			//initialize the particle effect
 			dustKickUpParticle = new ParticleEntity(screen, "Dust");
 			screen.addObject(dustKickUpParticle);
+			timeTillEndJumpAnim = 0;
+			timeTillEndJumpPrep = 0;
         }
 
         /// <summary>
@@ -203,7 +210,7 @@ namespace Abyss.Code.Game
 				if (onGround)
 				{
 					impulse += groundVector * MovementAccel;
-					//playMovementAnim();
+					playMovementAnim();
 				}
 				else
 					impulse += Vector2.UnitX * AirAccel;
@@ -214,36 +221,61 @@ namespace Abyss.Code.Game
 				if (onGround)
 				{
 					impulse += groundVector * -MovementAccel;
-					//playMovementAnim();
+					playMovementAnim();
 				}
 				else
 					impulse += Vector2.UnitX * -AirAccel;
 			}
+
+			/* JUMPING:
+			 * 1.) Player has pressed jump button, if we are on ground, start the jump animation, and enter the 
+			 * START_JUMP_DELAY.
+			 * 2.) START_JUMP_DELAY should last just long enough to play the crouching part of the jump animation.
+			 * 3.) Then start applying jump impulse, this puts us in the air.
+			 */
 			
 			if (jump && onGround) 
 			{
-				jumping = true;
 				longJump = (moveLeft || moveRight);
-				timeSinceJump = JUMP_IMPULSE_TIME; //time to apply upward impulse
+				timeTillEndJump = JUMP_IMPULSE_TIME; //time to apply upward impulse
+				timeTillEndJumpAnim = JUMPING_ANIM_TIME;
 			}
 
+			//play the start jump animation.
+			if (timeTillEndJumpAnim > 0)
+			{
+				playJumpAnim();
+				timeTillEndJumpAnim -= gameTime.ElapsedGameTime.Milliseconds * .01f;
+				if (timeTillEndJumpAnim <= 0) //when we finish...
+				{
+					jumping = true; //actually jump now
+					timeTillEndJumpAnim = 0;
+				}
+			}
+			else if (!inStep && onGround)
+				playIdleAnim();
+			else if(!onGround) 
+				playJumpingAnim(); //otherwise we must be in the air and not doing a jump prep.
+
+			//apply the upward impulse that starts off a jump.
 			if (jumping)
 			{
+				inStep = false;
 				float jumpHeight = JumpHeight;
 				if (longJump)
 					jumpHeight += LongJumpBonus;
 
-				if (timeSinceJump <= 0)
+				if (timeTillEndJump <= 0)
 					jumping = false;
 				else //jump
 				{
 					impulse -= Vector2.UnitY * (jumpHeight * (gameTime.ElapsedGameTime.Milliseconds * 0.01f));
-					timeSinceJump -= gameTime.ElapsedGameTime.Milliseconds * .01f;
+					timeTillEndJump -= gameTime.ElapsedGameTime.Milliseconds * .01f;
 				}
 			}
 
 			//stick to the ground a little
-			if(onGround)
+			if (onGround)
 				impulse += -groundNormal * groundStickiness;
 
 			PhysicsBody.Body.ApplyLinearImpulse(ref impulse);
@@ -355,12 +387,13 @@ namespace Abyss.Code.Game
 			return PhysicsBody.Body.Position - new Vector2(0, (float)(PhysicsBody.Shape.Radius*0.75));
 		}
 
-		protected virtual void playMovementAnim()
-		{
-		}
-		protected virtual void playIdleAnim()
-		{
-		}
+		protected virtual void playMovementAnim() { }
+
+		protected virtual void playIdleAnim() { }
+
+		protected virtual void playJumpAnim() { }
+
+		protected virtual void playJumpingAnim() { }
 
 		public override void draw(GameTime gameTime)
 		{

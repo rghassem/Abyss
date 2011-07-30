@@ -3,16 +3,17 @@
  <tileset firstgid="1" source="tilesheet.tsx"/>
  <layer name="Main" width="64" height="32">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3WwQqDQAwE0PXQ2kNtD0Iv+///qYKBGLKauAGtzoOBHqybMVKaEgAAAAAAAABArEbJHVyhb2+8jve80q4t/annZ8x3zC8t+7cs5BE7ZhW5r34Ofd76LvV+ifutebIcTXtfLR14726O971/e4cNkJUZtLlLHbTelLYylnlrZXHP0t5k/7XeUZnI59GxeUu/J145+Xcje3t4+mtn0DNoKmYg2v+Rrew9i1i687NK/SL6H8G6e3mt9K/9AQDOYAAWG69EACAAAA==
+   H4sIAAAAAAAAC+3WwQrCMBBF0Ymg7cLqQnCT//9PKzowPqbtpAlU6zswC0tpchsRRYiIiIiIiIiI2krO/IM99N6C99nOPZ11pF87L+Ncx7nLZ39nRh3bbrMKntdBXt1Jlvttdw/Pm3MyszVs7yXWYLuH95R+788r9lsrw2dst9c9XrdOVzmR/dbK8EzbY5uxf6671Tzh+xjMfqd+T0plKT8b7C5R0u+toe8gVexBef9HlmbtWirSbtea6mvRv4Xo2eO96Ff7iYi+wQNPiLj6ACAAAA==
   </data>
  </layer>
  <objectgroup name="Objects" width="64" height="32">
   <object name="spawn" type="spawn" x="139" y="1444" width="71" height="89"/>
-  <object name="goblin" type="goblin" x="375" y="1395" width="62" height="139">
+  <object name="goblin" type="goblin" x="1671" y="1265" width="62" height="139">
    <properties>
     <property name="MaxRange" value="300"/>
     <property name="PatrolRadius" value="4"/>
    </properties>
   </object>
+  <object name="FirstLight" type="light" x="170" y="1180" width="15" height="44"/>
  </objectgroup>
 </map>

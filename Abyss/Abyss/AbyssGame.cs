@@ -197,6 +197,12 @@ namespace Abyss
             // TODO: Unload any non ContentManager content here
         }
 
+		public void setHealthDisplay(int health)
+		{
+			tempHealth = health;
+		}
+
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -221,13 +227,13 @@ namespace Abyss
 			}
 
 			if (elapsedTime > threshold) {
-				if (Keyboard.GetState().IsKeyDown(Keys.U)) {
-					tempHealth -= 5;
+				//if (Keyboard.GetState().IsKeyDown(Keys.U)) {
+					//tempHealth -= 5;
 					/* These two lines are the only lines we actually need, rest is for testing purposes only: */
 					String command = "document.getElementById('health').innerHTML = '" + tempHealth + "';";
 					webKit.ExecuteJavascript(command);
 					/* Only these two lines were necessary*/
-				}
+				//}
 				elapsedTime = 0.0f;
 			}
                 
@@ -320,6 +326,7 @@ namespace Abyss
             spriteBatch.End();*/
 
 			screenManager.drawActiveScreen(gameTime);
+
 
 			// ADDED FOR TROYMIUM
 			#if ENABLE_GUI	
